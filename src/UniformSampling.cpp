@@ -1,7 +1,6 @@
 #include <vector>
 #include "UniformSampling.h"
 
-
 UniformSampling::UniformSampling(const std::function<double(double)>& func)
         : MonteCarloMethod(func) {}
 
@@ -9,7 +8,7 @@ MonteCarloMethod::Sampling UniformSampling::sample() {
 
     const double a = 0, b = 15;
 
-    const size_t nPoints = 100000000;
+    const size_t nPoints = 10000000;
     double sum = 0, sumSquares = 0;
 
     for (size_t i = 0; i < nPoints; ++i) {

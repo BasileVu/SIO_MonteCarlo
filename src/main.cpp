@@ -2,6 +2,7 @@
 #include <cmath>
 #include <functional>
 #include <iostream>
+#include <ctime>
 
 #include "UniformSampling.h"
 
@@ -14,9 +15,13 @@ int main () {
     };
 
     UniformSampling us(g);
+    clock_t start = clock();
     MonteCarloMethod::Sampling s = us.sample();
 
     cout << s.areaEstimator << ", " << s.confidenceInterval.toString() << endl;
+    cout << (double)(clock() - start) / CLOCKS_PER_SEC << endl;
+
+
 
     return EXIT_SUCCESS;
 }
