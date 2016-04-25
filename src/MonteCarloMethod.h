@@ -19,6 +19,7 @@ public:
     };
 
     MonteCarloMethod(const std::function<double(double)>& func);
+
     virtual Sampling sample() = 0;
 };
 

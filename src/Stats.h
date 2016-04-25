@@ -5,6 +5,7 @@
 #include <string>
 #include <cmath>
 #include <algorithm>
+#include "PiecewiseLinearFunction.h"
 
 /**
  * Represente une intervalle de confiance.
@@ -54,6 +55,8 @@ public:
      * \return L'intervalle de confiance.
      */
     static ConfidenceInterval confidenceInterval(const std::vector<double>& values, double quantile);
+
+    static PiecewiseLinearFunction createPWLFunction(size_t numPoints, const std::function<double(double)>& func, double a, double b);
 };
 
 #endif // STATS_H

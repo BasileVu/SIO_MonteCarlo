@@ -33,3 +33,27 @@ ConfidenceInterval Stats::confidenceInterval(const std::vector<double>& values, 
     double halfDelta = quantile * (sampleStdDev(values) / std::sqrt(values.size()));
     return ConfidenceInterval {m - halfDelta, m + halfDelta, halfDelta*2};
 };
+
+PiecewiseLinearFunction Stats::createPWLFunction(size_t numPoints, const std::function<double(double)>& func, double a, double b) {
+
+    if (numPoints == 0) {
+        throw std::invalid_argument("Le nombre de points doit etre plus grand que 0.");
+    }
+
+    if (a > b) {
+        throw std::invalid_argument("a est plus grand que b !");
+    }
+
+    std::vector<double> xs, ys;
+    xs.reserve(numPoints); ys.reserve(numPoints);
+
+    double pieceWidth = (b - a)/numPoints;
+
+    for (size_t i = 0; i < numPoints; ++i) {
+        double x = a + pieceWidth*i;
+        xs.push_back(x);
+        ys.push_back(func(x));
+    }
+
+    return PiecewiseLinearFunction(xs, ys);
+}
