@@ -1,13 +1,19 @@
-#ifndef UNIFORMSAMPLING_H
-#define UNIFORMSAMPLING_H
+#ifndef UNIFORM_SAMPLING_H
+#define UNIFORM_SAMPLING_H
 
 #include "MonteCarloMethod.h"
 
 class UniformSampling : public MonteCarloMethod {
-public:
-    UniformSampling(const std::function<double(double)>& func);
+private:
+    std::mt19937_64 generator;
+    std::uniform_real_distribution<double> distribution;
 
-    Sampling sample();
+public:
+    UniformSampling(const Func& g);
+
+    Sampling sample(size_t numPoints);
+
+    void setSeed(const std::seed_seq& seed);
 };
 
-#endif // UNIFORMSAMPLING_H
+#endif // UNIFORMS_AMPLING_H

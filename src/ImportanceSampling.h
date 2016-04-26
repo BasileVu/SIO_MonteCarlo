@@ -1,8 +1,18 @@
-#ifndef IMPORTANCESAMPLING_H
-#define IMPORTANCESAMPLING_H
+#ifndef IMPORTANCE_SAMPLING_H
+#define IMPORTANCE_SAMPLING_H
 
-class ImportanceSampling {
+#include "MonteCarloMethod.h"
 
+class ImportanceSampling : public MonteCarloMethod {
+private:
+    std::seed_seq seed;
+
+public:
+    ImportanceSampling(const Func& g);
+
+    Sampling sample(size_t numPoints, const Func& f, const std::vector<double> xs, const std::vector<double> ys);
+
+    void setSeed(const std::seed_seq& seed);
 };
 
-#endif // IMPORTANCESAMPLING_H
+#endif // IMPORTANCE_SAMPLING_H

@@ -21,6 +21,10 @@ struct ConfidenceInterval {
     std::string toString() const;
 };
 
+struct Points {
+    std::vector<double> xs, ys;
+};
+
 /**
  * Regroupe differentes fonctions relatives aux statistiques.
  */
@@ -56,7 +60,7 @@ public:
      */
     static ConfidenceInterval confidenceInterval(const std::vector<double>& values, double quantile);
 
-    static PiecewiseLinearFunction createPWLFunction(size_t numPoints, const std::function<double(double)>& func, double a, double b);
+    static Points createPoints(size_t numPoints, const std::function<double(double)>& func, double a, double b);
 };
 
 #endif // STATS_H

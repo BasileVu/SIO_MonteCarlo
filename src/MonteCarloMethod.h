@@ -6,10 +6,11 @@
 #include "Stats.h"
 
 class MonteCarloMethod {
+public:
+    typedef std::function<double(double)>Func;
+
 protected:
-    const std::function<double(double)>& func;
-    std::mt19937_64 generator;
-    std::uniform_real_distribution<double> distribution;
+    const Func& g;
 
 public:
 
@@ -18,9 +19,8 @@ public:
         ConfidenceInterval confidenceInterval;
     };
 
-    MonteCarloMethod(const std::function<double(double)>& func);
-
-    virtual Sampling sample() = 0;
+    MonteCarloMethod(const Func& g);
+    virtual void setSeed(const std::seed_seq& seed) = 0;
 };
 
 #endif // MONTECARLOMETHOD_H

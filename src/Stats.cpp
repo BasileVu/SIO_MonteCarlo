@@ -34,7 +34,7 @@ ConfidenceInterval Stats::confidenceInterval(const std::vector<double>& values, 
     return ConfidenceInterval {m - halfDelta, m + halfDelta, halfDelta*2};
 };
 
-PiecewiseLinearFunction Stats::createPWLFunction(size_t numPoints, const std::function<double(double)>& func, double a, double b) {
+Points Stats::createPoints(size_t numPoints, const std::function<double(double)>& func, double a, double b) {
 
     if (numPoints == 0) {
         throw std::invalid_argument("Le nombre de points doit etre plus grand que 0.");
@@ -50,10 +50,10 @@ PiecewiseLinearFunction Stats::createPWLFunction(size_t numPoints, const std::fu
     double pieceWidth = (b - a)/numPoints;
 
     for (size_t i = 0; i < numPoints; ++i) {
-        double x = a + pieceWidth*i;
+        double x = a + pieceWidth * i;
         xs.push_back(x);
         ys.push_back(func(x));
     }
 
-    return PiecewiseLinearFunction(xs, ys);
+    return {xs, ys};
 }

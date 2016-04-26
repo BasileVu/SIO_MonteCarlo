@@ -51,7 +51,7 @@ protected:
 class HitOrMiss : public RandomValueGenerator {
 private:
     double a, b; // bornes min et max a prendre en compte pour la generation de l'abcisse du point
-    double yMax; // maximum des ordonnees des points constituant "func" (utile pour la génération de l'ordonnee du point)
+    double yMax; // maximum des ordonnees des points constituant "g" (utile pour la génération de l'ordonnee du point)
 
 public:
 
