@@ -44,6 +44,10 @@ size_t RandomValueGenerator::generateK() {
     }
 }
 
+const PiecewiseLinearFunction& RandomValueGenerator::getPWLFunc() const {
+    return func;
+}
+
 HitOrMiss::HitOrMiss(const std::vector<double>& xs, const std::vector<double>& ys)
         : RandomValueGenerator(xs, ys) {
     a = xs.front(), b = xs.back();

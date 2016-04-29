@@ -4,13 +4,11 @@
 UniformSampling::UniformSampling(const MonteCarloMethod::Func& g)
         : MonteCarloMethod(g), distribution(std::uniform_real_distribution<double>(0, 1)) {}
 
-MonteCarloMethod::Sampling UniformSampling::sample(size_t numPoints) {
-
-    const double a = 0, b = 15;
+MonteCarloMethod::Sampling UniformSampling::sample(size_t numPoints, double a, double b) {
     double sum = 0, sumSquares = 0;
 
     for (size_t i = 0; i < numPoints; ++i) {
-        double X = distribution(generator) * (b-a);
+        double X = distribution(generator) * (b-a) + a;
         double Y = g(X);
 
         sum += Y;

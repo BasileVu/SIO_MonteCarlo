@@ -11,7 +11,7 @@ private:
 public:
     UniformSampling(const Func& g);
 
-    Sampling sample(size_t numPoints);
+    Sampling sample(size_t numPoints, double a, double b);
 
     void setSeed(const std::seed_seq& seed);
 };

@@ -10,7 +10,7 @@ private:
 public:
     ImportanceSampling(const Func& g);
 
-    Sampling sample(size_t numPoints, const Func& f, const std::vector<double> xs, const std::vector<double> ys);
+    Sampling sample(size_t numPoints, const std::vector<double> xs, const std::vector<double> ys);
 
     void setSeed(const std::seed_seq& seed);
 };

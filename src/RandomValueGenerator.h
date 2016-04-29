@@ -35,6 +35,9 @@ public:
      */
     virtual double generate() = 0;
 
+    //TODO doc
+    const PiecewiseLinearFunction& getPWLFunc() const;
+
 protected:
     /**
      * \brief Permet de trouver dans quel intervalle k on tombe en fonction de la probablilité p_k de la tranche liée à

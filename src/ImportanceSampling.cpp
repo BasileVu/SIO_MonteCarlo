@@ -5,17 +5,17 @@ ImportanceSampling::ImportanceSampling(const std::function<double(double)>& g)
         : MonteCarloMethod(g) {
 }
 
-MonteCarloMethod::Sampling ImportanceSampling::sample(size_t numPoints, const MonteCarloMethod::Func& f,
-                                                      const std::vector<double> xs, const std::vector<double> ys) {
+MonteCarloMethod::Sampling ImportanceSampling::sample(size_t numPoints, const std::vector<double> xs, const std::vector<double> ys) {
 
     double sum = 0, squares = 0;
 
     InverseFunctions inv(xs, ys);
     inv.setSeed(seed);
+    const PiecewiseLinearFunction& f = inv.getPWLFunc();
 
     for (size_t i = 0; i < numPoints; ++i) {
         double X = inv.generate();
-        double Y = g(X) / f(X);
+        double Y = g(X) / (f.pieces[f.findPart(X)].f_k(X) / f.A);
 
         sum += Y;
         squares += Y*Y;
