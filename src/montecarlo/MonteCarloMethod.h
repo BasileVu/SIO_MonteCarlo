@@ -3,7 +3,7 @@
 
 #include <random>
 #include <functional>
-#include "Stats.h"
+#include "../utility/Stats.h"
 
 class MonteCarloMethod {
 public:

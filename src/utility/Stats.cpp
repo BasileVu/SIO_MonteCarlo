@@ -23,6 +23,20 @@ double Stats::sampleStdDev(const std::vector<double>& values) {
     return std::sqrt(sampleVar(values));
 }
 
+double Stats::expectedValue(const PiecewiseLinearFunction& f) {
+    double res = 0;
+    for (const Piece& p : f.pieces) {
+        double x0 = p.x0, x1 = p.x1;
+        double y0 = p.y0, y1 = p.y1;
+
+        if (y0 + y1 > 0) {
+            double eVal = (y0 * (2 * x0 + x1) + y1 * (x0 + 2 * x1)) / (3 * (y0 + y1));
+            res += eVal * p.A_k;
+        }
+    }
+    return res / f.A;
+}
+
 
 double Stats::mean(const std::vector<double>& values) {
     return std::accumulate(values.begin(), values.end(), 0.0) / values.size();

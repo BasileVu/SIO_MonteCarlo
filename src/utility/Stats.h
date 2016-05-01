@@ -45,6 +45,9 @@ public:
      */
     static double sampleStdDev(const std::vector<double>& values);
 
+    // TODO
+    static double expectedValue(const PiecewiseLinearFunction& f);
+
     /**
      * \brief Calcule la moyenne d'un ensemble de donnees.
      * \param values Les valeurs a utiliser.

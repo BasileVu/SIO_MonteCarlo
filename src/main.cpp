@@ -4,8 +4,9 @@
 #include <iostream>
 #include <ctime>
 
-#include "UniformSampling.h"
-#include "ImportanceSampling.h"
+#include "montecarlo/UniformSampling.h"
+#include "montecarlo/ImportanceSampling.h"
+#include "montecarlo/ControlVariable.h"
 
 using namespace std;
 
@@ -38,6 +39,26 @@ int main () {
 
         clock_t start = clock();
         MonteCarloMethod::Sampling s = is.sample(100000, points.xs, points.ys);
+
+        cout << s.areaEstimator << ", " << s.confidenceInterval.toString() << endl;
+        cout << (double) (clock() - start) / CLOCKS_PER_SEC << " s" << endl;
+    }
+
+    {
+
+        MonteCarloMethod::Func test = [](double x) {
+            return sqrt(x + cos(x*x));
+        };
+
+        MonteCarloMethod::Func h = [](double x) {
+            return 1 + (3*x / 10);
+        };
+
+        ControlVariable cv(test);
+        cv.setSeed(seed);
+
+        clock_t start = clock();
+        MonteCarloMethod::Sampling s = cv.sample(10000, 1000000, 0, 5, h, (7.0/4));
 
         cout << s.areaEstimator << ", " << s.confidenceInterval.toString() << endl;
         cout << (double) (clock() - start) / CLOCKS_PER_SEC << " s" << endl;

@@ -1,11 +1,11 @@
 #include "ImportanceSampling.h"
-#include "RandomValueGenerator.h"
+#include "../generators/RandomValueGenerator.h"
 
 ImportanceSampling::ImportanceSampling(const std::function<double(double)>& g)
         : MonteCarloMethod(g) {
 }
 
-MonteCarloMethod::Sampling ImportanceSampling::sample(size_t numPoints, const std::vector<double> xs, const std::vector<double> ys) {
+MonteCarloMethod::Sampling ImportanceSampling::sample(size_t N, const std::vector<double> xs, const std::vector<double> ys) {
 
     double sum = 0, squares = 0;
 
@@ -13,7 +13,7 @@ MonteCarloMethod::Sampling ImportanceSampling::sample(size_t numPoints, const st
     inv.setSeed(seed);
     const PiecewiseLinearFunction& f = inv.getPWLFunc();
 
-    for (size_t i = 0; i < numPoints; ++i) {
+    for (size_t i = 0; i < N; ++i) {
         double X = inv.generate();
         double Y = g(X) / (f.pieces[f.findPart(X)].f_k(X) / f.A);
 
@@ -21,10 +21,10 @@ MonteCarloMethod::Sampling ImportanceSampling::sample(size_t numPoints, const st
         squares += Y*Y;
     }
 
-    double mean = sum / numPoints;
-    double var = squares/numPoints - mean*mean;
+    double mean = sum / N;
+    double var = squares/N - mean*mean;
 
-    double halfDelta = 1.96 * sqrt(var/numPoints);
+    double halfDelta = 1.96 * sqrt(var/N);
 
     return {mean, {mean - halfDelta, mean + halfDelta}};
 }

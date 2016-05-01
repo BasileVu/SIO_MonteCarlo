@@ -3,7 +3,7 @@
 
 #include <random>
 #include <vector>
-#include "PiecewiseLinearFunction.h"
+#include "../utility/PiecewiseLinearFunction.h"
 
 /**
  * Represente un generateur de realisations de variables aleatoires associees a une fonction affine par morceaux.
@@ -40,7 +40,7 @@ public:
 
 protected:
     /**
-     * \brief Permet de trouver dans quel intervalle k on tombe en fonction de la probablilité p_k de la tranche liée à
+     * \brief Permet de trouver dans quelle intervalle k on tombe en fonction de la probablilité p_k de la tranche liée à
      *        cette intervalle.
      */
     size_t generateK();

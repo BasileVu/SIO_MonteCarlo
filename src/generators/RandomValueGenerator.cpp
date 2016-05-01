@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include "Checker.h"
+#include "../utility/Checker.h"
 #include "RandomValueGenerator.h"
 
 RandomValueGenerator::RandomValueGenerator(const std::vector<double>& xs, const std::vector<double>& ys)
@@ -35,7 +35,7 @@ size_t RandomValueGenerator::generateK() {
     size_t j = 1;
     double U = distribution(generator);
 
-    // on cherche l'indice de l'intervalle dans lequel on est tombe
+    // on cherche l'indice de l'intervalle dans laquelle on est tombe
     while (true) {
         if (U <= F_parts[j]) {
             return j-1;
