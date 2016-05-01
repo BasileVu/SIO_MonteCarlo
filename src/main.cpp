@@ -46,19 +46,11 @@ int main () {
 
     {
 
-        MonteCarloMethod::Func test = [](double x) {
-            return sqrt(x + cos(x*x));
-        };
-
-        MonteCarloMethod::Func h = [](double x) {
-            return 1 + (3*x / 10);
-        };
-
-        ControlVariable cv(test);
+        ControlVariable cv(g);
         cv.setSeed(seed);
 
         clock_t start = clock();
-        MonteCarloMethod::Sampling s = cv.sample(10000, 1000000, 0, 5, h, (7.0/4));
+        MonteCarloMethod::Sampling s = cv.sample(10000, 1000000, 0, 15, points.xs, points.ys);
 
         cout << s.areaEstimator << ", " << s.confidenceInterval.toString() << endl;
         cout << (double) (clock() - start) / CLOCKS_PER_SEC << " s" << endl;

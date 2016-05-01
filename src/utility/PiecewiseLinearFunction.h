@@ -29,8 +29,9 @@ struct PiecewiseLinearFunction {
      * \param x l'abscisse dont on veut connaître l'intervalle.
      * \return l'indice du morceau dans lequel x se trouve.
      */
-    size_t findPart(double x) const;
+    size_t findPiece(double x) const;
 
+    double operator()(double x) const;
 };
 
 #endif // PIECEWISE_LINEAR_FUNCTION_H

@@ -27,7 +27,7 @@ PiecewiseLinearFunction::PiecewiseLinearFunction(const std::vector<double>& xs, 
     }
 }
 
-size_t PiecewiseLinearFunction::findPart(double x) const {
+size_t PiecewiseLinearFunction::findPiece(double x) const {
 
     size_t first = 0, last = pieces.size() - 1; // indices des tranches à prendre en compte
 
@@ -46,4 +46,8 @@ size_t PiecewiseLinearFunction::findPart(double x) const {
             first = mid+1;
         }
     }
+}
+
+double PiecewiseLinearFunction::operator()(double x) const {
+    return pieces[findPiece(x)].f_k(x);
 }

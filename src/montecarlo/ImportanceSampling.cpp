@@ -15,7 +15,7 @@ MonteCarloMethod::Sampling ImportanceSampling::sample(size_t N, const std::vecto
 
     for (size_t i = 0; i < N; ++i) {
         double X = inv.generate();
-        double Y = g(X) / (f.pieces[f.findPart(X)].f_k(X) / f.A);
+        double Y = g(X) / (f.pieces[f.findPiece(X)].f_k(X) / f.A);
 
         sum += Y;
         squares += Y*Y;

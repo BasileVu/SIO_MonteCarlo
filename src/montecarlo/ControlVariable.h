@@ -11,7 +11,7 @@ private:
 public:
     ControlVariable(const Func &g);
 
-    Sampling sample(size_t M, size_t N, double a, double b, const Func& h, double mu);
+    Sampling sample(size_t M, size_t N, double a, double b, const std::vector<double>& xs, const std::vector<double>& ys);
 
     void setSeed(const std::seed_seq& seed);
 };

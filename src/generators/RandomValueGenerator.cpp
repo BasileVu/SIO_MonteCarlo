@@ -72,7 +72,7 @@ double HitOrMiss::generate() {
         Y = distribution(generator) * yMax;
 
         // on cherche le morceau lie à l'intervalle dans laquelle X se trouve
-        sliceIndex = func.findPart(X);
+        sliceIndex = func.findPiece(X);
 
         // rejet si Y est > que f(X), avec f_k la fonction affine associee a l'intervalle k
     } while (Y > func.pieces[sliceIndex].f_k(X));
