@@ -24,10 +24,12 @@ int main () {
     size_t M = 10000, N = 1000000;
 
     // nombre de points a utiliser pour la fonction affine par morceaux
-    size_t numPointsPWLFunc = 2;
+    size_t numPointsPWLFunc = 15;
 
     // largeur max de l'IC à 95%
     double deltaMax = 1;
+
+    size_t step = 10000;
 
     // graine utilisee pour les generateurs
     seed_seq seed = {24, 512, 42};
@@ -40,7 +42,7 @@ int main () {
         us.setSeed(seed);
 
         clock_t start = clock();
-        MonteCarloMethod::Sampling s = us.sample(1, 10000, a, b);
+        MonteCarloMethod::Sampling s = us.sample(deltaMax, step, a, b);
 
         cout << "-- Echantillonage uniforme --" << endl;
         cout << " N. de generations : " << s.N << endl;
@@ -58,7 +60,7 @@ int main () {
         is.setSeed(seed);
 
         clock_t start = clock();
-        MonteCarloMethod::Sampling s = is.sample(1, 10000, points.xs, points.ys);
+        MonteCarloMethod::Sampling s = is.sample(deltaMax, step, points.xs, points.ys);
 
         cout << "-- Echantillonage preferentiel --" << endl;
         cout << " N. de generations : " << s.N << endl;
@@ -73,10 +75,14 @@ int main () {
         cv.setSeed(seed);
 
         clock_t start = clock();
-        MonteCarloMethod::Sampling s = cv.sample(M, N, a, b, points.xs, points.ys);
+        MonteCarloMethod::Sampling s = cv.sample(M, deltaMax, step, a, b, points.xs, points.ys);
 
-        cout << s.areaEstimator << ", " << s.confidenceInterval << endl;
-        cout << (double) (clock() - start) / CLOCKS_PER_SEC << " s" << endl;
+        cout << "-- Methode de la variable de controle --" << endl;
+        cout << " N. de generations : " << s.N << endl;
+        cout << " Aire estimee      : " << s.areaEstimator << endl;
+        cout << " IC                : " << s.confidenceInterval << endl;
+        cout << " Temps d'execution : " << (double) (clock() - start) / CLOCKS_PER_SEC << "s" << endl;
+        cout << endl;
     }
 
 
