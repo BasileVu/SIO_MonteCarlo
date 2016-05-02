@@ -7,7 +7,7 @@ ImportanceSampling::ImportanceSampling(const std::function<double(double)>& g)
 MonteCarloMethod::Sampling ImportanceSampling::sample(size_t N, const std::vector<double> xs, const std::vector<double> ys) {
 
     double S = 0, Q = 0;
-    size_t tmpN = N;
+    size_t tmpN = 0;
 
     InverseFunctions inv(xs, ys);
     inv.setSeed(seed);

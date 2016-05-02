@@ -15,26 +15,18 @@ MonteCarloMethod::Sampling ControlVariable::sample(size_t M, size_t N, double a,
     double mu = Stats::expectedValue(h);
 
     // phase 1: on genere un "petit" echantillon de taille M
-    ControlVariable::Result res = firstStep(M, a, b, h, mu);
+    ControlVariable::ResultFirst firstRes = firstStep(M, a, b, h, mu);
 
-    double SV = res.SV, QV = res.QV, c = res.c;
+    double SV = firstRes.SV, QV = firstRes.QV, c = firstRes.c;
 
     // phase 2 : on poursuit l'echantillonage jusqu'a la taille de N desiree
-    for (size_t i = M; i < N; ++i) {
-        double X = distribution(generator) * (b-a) + a;
-        double Y = g(X), Z = h(X) / h.A;
-        double V = Y + c * (Z - mu);
-        SV += V;
-        QV += V * V;
-    }
+    size_t step = N - M; // nombre d'echantillons a generer
+    size_t tmpN = 0;
+    ControlVariable::ResultSecond secondRes = secondStep(step, tmpN, a, b, h, mu, c, SV, QV);
 
-    double meanV = SV / N;
-    double varV = (SV / N) - meanV;
-    double halfDelta = 1.96 * (b-a) * sqrt(varV / N);
+    double areaEstimator = (b-a) * secondRes.meanV;
 
-    double areaEstimator = (b-a) * meanV;
-
-    return {areaEstimator, ConfidenceInterval(areaEstimator, halfDelta), N};
+    return {areaEstimator, ConfidenceInterval(areaEstimator, secondRes.halfDelta), N};
 }
 
 MonteCarloMethod::Sampling ControlVariable::sample(size_t M, double maxDelta, size_t step, double a, double b,
@@ -44,33 +36,20 @@ MonteCarloMethod::Sampling ControlVariable::sample(size_t M, double maxDelta, si
     double mu = Stats::expectedValue(h);
 
     // phase 1: on genere un "petit" echantillon de taille M
-    ControlVariable::Result res = firstStep(M, a, b, h, mu);
+    ControlVariable::ResultFirst firstRes = firstStep(M, a, b, h, mu);
 
-    double SV = res.SV, QV = res.QV, c = res.c;
+    double SV = firstRes.SV, QV = firstRes.QV, c = firstRes.c;
     size_t N = M;
 
-    // phase 2 : on poursuit l'echantillonage jusqu'a lalageur de l'IC desiree
-    double halfDelta = 0, meanV = 0;
+    // phase 2 : on poursuit l'echantillonage jusqu'a la largeur de l'IC desiree
+    ResultSecond res;
     do {
-        for (size_t i = 0; i < step; ++i) {
-            double X = distribution(generator) * (b - a) + a;
-            double Y = g(X), Z = h(X) / h.A;
-            double V = Y + c * (Z - mu);
-            SV += V;
-            QV += V * V;
-        }
+        res = secondStep(step, N, a, b, h, mu, c, SV, QV);
+    } while (res.halfDelta * 2 > maxDelta);
 
-        N += step;
+    double areaEstimator = (b-a) * res.meanV;
 
-        meanV = SV / N;
-        double varV = (QV / N) - meanV;
-        halfDelta = 1.96 * (b-a) * sqrt(varV / N);
-
-    } while (halfDelta * 2 > maxDelta);
-
-    double areaEstimator = (b-a) * meanV;
-
-    return {areaEstimator, ConfidenceInterval(areaEstimator, halfDelta), N};
+    return {areaEstimator, ConfidenceInterval(areaEstimator, res.halfDelta), N};
 }
 
 void ControlVariable::setSeed(const std::seed_seq &seed) {
@@ -78,7 +57,7 @@ void ControlVariable::setSeed(const std::seed_seq &seed) {
     generator.seed(copy);
 }
 
-ControlVariable::Result ControlVariable::firstStep(size_t M, double a, double b, const PiecewiseLinearFunction& h, double mu) {
+ControlVariable::ResultFirst ControlVariable::firstStep(size_t M, double a, double b, const PiecewiseLinearFunction& h, double mu) {
     // phase 1: on genere un "petit" echantillon de taille M
     std::vector<double> yks, zks;
     yks.reserve(M), zks.reserve(M);
@@ -116,6 +95,26 @@ ControlVariable::Result ControlVariable::firstStep(size_t M, double a, double b,
     }
 
     return {SV, QV, c};
+}
+
+ControlVariable::ResultSecond ControlVariable::secondStep(size_t step, size_t& N, double a, double b,
+                                                         const PiecewiseLinearFunction& h, double mu, double c,
+                                                         double& SV, double& QV) {
+    for (size_t i = 0; i < step; ++i) {
+        double X = distribution(generator) * (b - a) + a;
+        double Y = g(X), Z = h(X) / h.A;
+        double V = Y + c * (Z - mu);
+        SV += V;
+        QV += V * V;
+    }
+
+    N += step;
+
+    double meanV = SV / N;
+    double varV = (QV / N) - meanV;
+    double halfDelta = 1.96 * (b-a) * sqrt(varV / N);
+
+    return {meanV, halfDelta};
 }
 
 

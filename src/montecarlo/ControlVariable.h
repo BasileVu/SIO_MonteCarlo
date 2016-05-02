@@ -20,14 +20,22 @@ public:
     void setSeed(const std::seed_seq& seed);
 
 private:
-    struct Result {
+    struct ResultFirst {
         double SV;
         double QV;
         double c;
     };
 
+    struct ResultSecond {
+        double meanV;
+        double halfDelta;
+    };
+
     // TODO
-    Result firstStep(size_t M, double a, double b, const PiecewiseLinearFunction &h, double mu);
+    ResultFirst firstStep(size_t M, double a, double b, const PiecewiseLinearFunction &h, double mu);
+
+    ResultSecond secondStep(size_t step, size_t& N, double a, double b, const PiecewiseLinearFunction& h,
+                                            double mu, double c, double& SV, double& QV);
 };
 
 #endif // CONTROLVARIABLE_H

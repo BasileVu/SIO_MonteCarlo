@@ -8,7 +8,7 @@ MonteCarloMethod::Sampling UniformSampling::sample(size_t N, double a, double b)
 
     // genere N valeurs et retourne dans res la moyenne et la demi-largeur de l'IC
     double S = 0, Q = 0;
-    size_t tmpN = N; // sauvegarde de N
+    size_t tmpN = 0; // sauvegarde de N
     Result res = sample(N, tmpN, a, b, S, Q);
 
     double areaEstimator = (b-a) * res.mean;
