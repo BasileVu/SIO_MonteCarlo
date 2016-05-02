@@ -17,6 +17,8 @@ struct ConfidenceInterval {
     double upper; // borne superieure
     double delta; // difference entre les deux bornes
 
+    ConfidenceInterval(double center, double halfDelta);
+
     /**
      * \brief Cree la representation sous forme de chaine de caracteres de l'intervalle de confiance.
      */

@@ -8,6 +8,13 @@ std::string ConfidenceInterval::toString() const {
     return ss.str();
 }
 
+ConfidenceInterval::ConfidenceInterval(double center, double halfDelta) {
+    lower = center - halfDelta;
+    upper = center + halfDelta;
+    delta = halfDelta * 2;
+}
+
+
 std::ostream& operator<<(std::ostream& os, const ConfidenceInterval& ci) {
     return os << ci.toString();
 }
@@ -49,7 +56,7 @@ double Stats::mean(const std::vector<double>& values) {
 ConfidenceInterval Stats::confidenceInterval(const std::vector<double>& values, double quantile) {
     double m = mean(values);
     double halfDelta = quantile * (sampleStdDev(values) / std::sqrt(values.size()));
-    return ConfidenceInterval {m - halfDelta, m + halfDelta, halfDelta*2};
+    return ConfidenceInterval (m, halfDelta);
 };
 
 Points Stats::createPoints(size_t numPoints, const std::function<double(double)>& func, double a, double b) {

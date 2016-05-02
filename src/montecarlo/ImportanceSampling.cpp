@@ -2,8 +2,7 @@
 #include "../generators/RandomValueGenerator.h"
 
 ImportanceSampling::ImportanceSampling(const std::function<double(double)>& g)
-        : MonteCarloMethod(g) {
-}
+        : MonteCarloMethod(g) {}
 
 MonteCarloMethod::Sampling ImportanceSampling::sample(size_t N, const std::vector<double> xs, const std::vector<double> ys) {
 
@@ -30,7 +29,7 @@ MonteCarloMethod::Sampling ImportanceSampling::sample(size_t N, const std::vecto
 
     double halfDelta = 1.96 * sqrt(var/N);
 
-    return {mean, {mean - halfDelta, mean + halfDelta, halfDelta * 2}};
+    return {mean, ConfidenceInterval(mean, halfDelta)};
 }
 
 void ImportanceSampling::setSeed(const std::seed_seq &seed) {

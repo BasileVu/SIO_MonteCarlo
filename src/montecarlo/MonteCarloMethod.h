@@ -17,6 +17,7 @@ public:
     struct Sampling {
         double areaEstimator;
         ConfidenceInterval confidenceInterval;
+        size_t N;
     };
 
     MonteCarloMethod(const Func& g);

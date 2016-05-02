@@ -13,7 +13,17 @@ public:
 
     Sampling sample(size_t N, double a, double b);
 
+    Sampling sample(double maxDelta, size_t step, double a, double b);
+
     void setSeed(const std::seed_seq& seed);
+
+private:
+    struct Result {
+        double mean;
+        double halfDelta;
+    };
+
+    Result sampleN(size_t step, size_t& N, double a, double b, double& S, double& Q);
 };
 
 #endif // UNIFORMS_AMPLING_H

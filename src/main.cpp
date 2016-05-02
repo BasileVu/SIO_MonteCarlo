@@ -26,6 +26,9 @@ int main () {
     // nombre de points a utiliser pour la fonction affine par morceaux
     size_t numPointsPWLFunc = 2;
 
+    // largeur max de l'IC à 95%
+    double deltaMax = 1;
+
     // graine utilisee pour les generateurs
     seed_seq seed = {24, 512, 42};
 
@@ -34,10 +37,14 @@ int main () {
         us.setSeed(seed);
 
         clock_t start = clock();
-        MonteCarloMethod::Sampling s = us.sample(N, a, b);
+        MonteCarloMethod::Sampling s = us.sample(1, 10000, a, b);
 
-        cout << s.areaEstimator << ", " << s.confidenceInterval << endl;
-        cout << (double) (clock() - start) / CLOCKS_PER_SEC << "s" << endl;
+        cout << "-- Echantillonage uniforme --" << endl;
+        cout << " N. de generations : " << s.N << endl;
+        cout << " Aire estimee      : " << s.areaEstimator << endl;
+        cout << " IC                : " << s.confidenceInterval << endl;
+        cout << " Temps d'execution : " << (double) (clock() - start) / CLOCKS_PER_SEC << "s" << endl;
+        cout << endl;
     }
 
     // creation des points de la fonction affine par morceaux

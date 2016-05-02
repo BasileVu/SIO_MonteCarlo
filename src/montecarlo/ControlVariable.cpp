@@ -64,7 +64,7 @@ MonteCarloMethod::Sampling ControlVariable::sample(size_t M, size_t N, double a,
     double areaEstimator = (b-a) * meanV;
     double halfDelta = 1.96 * (b-a) * sqrt(varV / N);
 
-    return {areaEstimator, {areaEstimator - halfDelta, areaEstimator + halfDelta, halfDelta * 2}};
+    return {areaEstimator, ConfidenceInterval(areaEstimator, halfDelta)};
 }
 
 void ControlVariable::setSeed(const std::seed_seq &seed) {
