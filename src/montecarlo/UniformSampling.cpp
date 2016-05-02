@@ -8,7 +8,8 @@ MonteCarloMethod::Sampling UniformSampling::sample(size_t N, double a, double b)
 
     // genere N valeurs et retourne dans res la moyenne et la demi-largeur de l'IC
     double S = 0, Q = 0;
-    Result res = sampleN(N, N, a, b, S, Q);
+    size_t tmpN = N; // sauvegarde de N
+    Result res = sample(N, tmpN, a, b, S, Q);
 
     double areaEstimator = (b-a) * res.mean;
 
@@ -24,7 +25,7 @@ MonteCarloMethod::Sampling UniformSampling::sample(double maxDelta, size_t step,
     // genere des valeurs tant que la largeur de l'intervalle de confiance est plus grande que "maxDelta"
     Result res;
     do {
-        res = sampleN(step, N, a, b, S, Q);
+        res = sample(step, N, a, b, S, Q);
     } while (res.halfDelta * 2 > maxDelta);
 
     double areaEstimator = (b - a) * res.mean;
@@ -33,7 +34,8 @@ MonteCarloMethod::Sampling UniformSampling::sample(double maxDelta, size_t step,
     return {areaEstimator, ConfidenceInterval(areaEstimator, res.halfDelta), N};
 }
 
-UniformSampling::Result UniformSampling::sampleN(size_t step, size_t& N, double a, double b, double& S, double& Q) {
+UniformSampling::Result UniformSampling::sample(size_t step, size_t &N, double a, double b, double& S, double& Q) {
+
     for (size_t i = 0; i < step; ++i) {
         double X = distribution(generator) * (b - a) + a;
         double Y = g(X);

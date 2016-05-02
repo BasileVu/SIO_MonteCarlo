@@ -32,6 +32,9 @@ int main () {
     // graine utilisee pour les generateurs
     seed_seq seed = {24, 512, 42};
 
+    cout << "Largeur max de l'IC : " << deltaMax << endl;
+    cout << endl;
+
     {
         UniformSampling us(g);
         us.setSeed(seed);
@@ -55,10 +58,14 @@ int main () {
         is.setSeed(seed);
 
         clock_t start = clock();
-        MonteCarloMethod::Sampling s = is.sample(N, points.xs, points.ys);
+        MonteCarloMethod::Sampling s = is.sample(1, 10000, points.xs, points.ys);
 
-        cout << s.areaEstimator << ", " << s.confidenceInterval << endl;
-        cout << (double) (clock() - start) / CLOCKS_PER_SEC << " s" << endl;
+        cout << "-- Echantillonage preferentiel --" << endl;
+        cout << " N. de generations : " << s.N << endl;
+        cout << " Aire estimee      : " << s.areaEstimator << endl;
+        cout << " IC                : " << s.confidenceInterval << endl;
+        cout << " Temps d'execution : " << (double) (clock() - start) / CLOCKS_PER_SEC << "s" << endl;
+        cout << endl;
     }
 
     {
