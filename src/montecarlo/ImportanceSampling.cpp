@@ -15,14 +15,15 @@ MonteCarloMethod::Sampling ImportanceSampling::sample(size_t N, const std::vecto
 
     for (size_t i = 0; i < N; ++i) {
         double X = inv.generate();
-        double Y = g(X) / (f(X) / f.A);
+        double Y = g(X) / f(X);
 
         sum += Y;
         squares += Y*Y;
     }
 
-    //sum /= f.A;
-    //squares /= (f.A * f.A);
+    // multiplication a la fin plutot qu'a chaque iteration dans la boucle
+    sum *= f.A;
+    squares *= (f.A * f.A);
 
     double mean = sum/N;
     double var = squares/N - mean*mean;

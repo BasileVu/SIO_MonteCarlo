@@ -5,12 +5,14 @@
 #include <string>
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 #include "PiecewiseLinearFunction.h"
 
 /**
  * Represente une intervalle de confiance.
  */
 struct ConfidenceInterval {
+
     double lower; // borne inferieure
     double upper; // borne superieure
     double delta; // difference entre les deux bornes
@@ -20,6 +22,9 @@ struct ConfidenceInterval {
      */
     std::string toString() const;
 };
+
+// TODO
+std::ostream& operator<<(std::ostream& os, const ConfidenceInterval& ci);
 
 // TODO
 struct Points {

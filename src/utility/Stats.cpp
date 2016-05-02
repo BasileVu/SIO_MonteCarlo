@@ -8,6 +8,10 @@ std::string ConfidenceInterval::toString() const {
     return ss.str();
 }
 
+std::ostream& operator<<(std::ostream& os, const ConfidenceInterval& ci) {
+    return os << ci.toString();
+}
+
 double Stats::sampleVar(const std::vector<double>& values) {
     double sum = 0;
     double m = mean(values);
