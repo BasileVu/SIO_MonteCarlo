@@ -15,18 +15,21 @@ MonteCarloMethod::Sampling ImportanceSampling::sample(size_t N, const std::vecto
 
     for (size_t i = 0; i < N; ++i) {
         double X = inv.generate();
-        double Y = g(X) / (f.pieces[f.findPiece(X)].f_k(X) / f.A);
+        double Y = g(X) / (f(X) / f.A);
 
         sum += Y;
         squares += Y*Y;
     }
 
-    double mean = sum / N;
+    //sum /= f.A;
+    //squares /= (f.A * f.A);
+
+    double mean = sum/N;
     double var = squares/N - mean*mean;
 
     double halfDelta = 1.96 * sqrt(var/N);
 
-    return {mean, {mean - halfDelta, mean + halfDelta}};
+    return {mean, {mean - halfDelta, mean + halfDelta, halfDelta * 2}};
 }
 
 void ImportanceSampling::setSeed(const std::seed_seq &seed) {

@@ -50,7 +50,7 @@ MonteCarloMethod::Sampling ControlVariable::sample(size_t M, size_t N, double a,
         squaresV += V * V;
     }
 
-    // phase 2 : on poursuit l'échantillonage jusqu'a la taille de N desiree
+    // phase 2 : on poursuit l'echantillonage jusqu'a la taille de N desiree
     for (size_t i = M; i < N; ++i) {
         double X = distribution(generator) * (b-a) + a;
         double Y = g(X), Z = h(X) / h.A;

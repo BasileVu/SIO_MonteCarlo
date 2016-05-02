@@ -50,18 +50,18 @@ ConfidenceInterval Stats::confidenceInterval(const std::vector<double>& values, 
 
 Points Stats::createPoints(size_t numPoints, const std::function<double(double)>& func, double a, double b) {
 
-    if (numPoints == 0) {
-        throw std::invalid_argument("Le nombre de points doit etre plus grand que 0.");
+    if (numPoints < 2) {
+        throw std::invalid_argument("Le nombre de points doit etre au moins egal a 2.");
     }
 
     if (a > b) {
-        throw std::invalid_argument("a est plus grand que b !");
+        throw std::invalid_argument("Borne minimale plus grande que borne maximale.");
     }
 
     std::vector<double> xs, ys;
     xs.reserve(numPoints); ys.reserve(numPoints);
 
-    double pieceWidth = (b - a)/numPoints;
+    double pieceWidth = (b - a) / (numPoints - 1);
 
     for (size_t i = 0; i < numPoints; ++i) {
         double x = a + pieceWidth * i;

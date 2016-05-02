@@ -21,6 +21,7 @@ struct ConfidenceInterval {
     std::string toString() const;
 };
 
+// TODO
 struct Points {
     std::vector<double> xs, ys;
 };
@@ -63,6 +64,7 @@ public:
      */
     static ConfidenceInterval confidenceInterval(const std::vector<double>& values, double quantile);
 
+    // TODO
     static Points createPoints(size_t numPoints, const std::function<double(double)>& func, double a, double b);
 };
 

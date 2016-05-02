@@ -18,8 +18,8 @@ int main () {
     };
 
     double a = 0, b = 15;
-    size_t M = 10000, N = 1000000;
-    size_t numPointsPWL = 30;
+    size_t M = 10000, N = 100000;
+    size_t numPointsPWLFunc = 2;
 
     seed_seq seed = {24, 512, 42};
 
@@ -34,7 +34,7 @@ int main () {
         cout << (double) (clock() - start) / CLOCKS_PER_SEC << "s" << endl;
     }
 
-    Points points = Stats::createPoints(numPointsPWL, g, a, b);
+    Points points = Stats::createPoints(numPointsPWLFunc, g, a, b);
 
     {
         ImportanceSampling is(g);
