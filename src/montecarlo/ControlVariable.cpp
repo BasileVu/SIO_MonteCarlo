@@ -3,40 +3,40 @@
 
 #include "ControlVariable.h"
 
-ControlVariable::ControlVariable(const MonteCarloMethod::Func& g)
-        : MonteCarloMethod(g), distribution(std::uniform_real_distribution<double>(0, 1)) {}
+ControlVariable::ControlVariable(const Func& g, double a, double b,
+                                 const std::vector<double>& xs, const std::vector<double>& ys)
+        :
+        MonteCarloMethod(g),
+        distribution(std::uniform_real_distribution<double>(0, 1)),
+        h(xs, ys), a(a), b(b)
 
-MonteCarloMethod::Sampling ControlVariable::sample(size_t M, size_t N, double a, double b,
-                                                   const std::vector<double>& xs, const std::vector<double>& ys) {
+{
+    mu = h.A / (b-a);
+}
+
+MonteCarloMethod::Sampling ControlVariable::sample(size_t M, size_t N) {
 
     // TODO preconditions
 
-    PiecewiseLinearFunction h(xs, ys);
-    double mu = h.A / (b-a); //
-
     // phase 1: on genere un "petit" echantillon de taille M
-    ControlVariable::ResultFirst firstRes = firstStep(M, a, b, h, mu);
+    ControlVariable::ResultFirst firstRes = firstStep(M);
 
     double SV = firstRes.SV, QV = firstRes.QV, c = firstRes.c;
 
     // phase 2 : on poursuit l'echantillonage jusqu'a la taille de N desiree
     size_t step = N - M; // nombre d'echantillons a generer
     size_t tmpN = M;
-    ControlVariable::ResultSecond secondRes = secondStep(step, tmpN, a, b, h, mu, c, SV, QV);
+    ControlVariable::ResultSecond secondRes = secondStep(step, tmpN, c, SV, QV);
 
     double areaEstimator = (b-a) * secondRes.meanV;
 
     return {areaEstimator, ConfidenceInterval(areaEstimator, secondRes.halfDelta), N};
 }
 
-MonteCarloMethod::Sampling ControlVariable::sample(size_t M, double maxDelta, size_t step, double a, double b,
-                                                   const std::vector<double>& xs, const std::vector<double>& ys) {
-
-    PiecewiseLinearFunction h(xs, ys);
-    double mu = h.A / (b-a);
+MonteCarloMethod::Sampling ControlVariable::sample(size_t M, double maxDelta, size_t step) {
 
     // phase 1: on genere un "petit" echantillon de taille M
-    ControlVariable::ResultFirst firstRes = firstStep(M, a, b, h, mu);
+    ControlVariable::ResultFirst firstRes = firstStep(M);
 
     double SV = firstRes.SV, QV = firstRes.QV, c = firstRes.c;
     size_t N = M;
@@ -44,7 +44,7 @@ MonteCarloMethod::Sampling ControlVariable::sample(size_t M, double maxDelta, si
     // phase 2 : on poursuit l'echantillonage jusqu'a la largeur de l'IC desiree
     ResultSecond res;
     do {
-        res = secondStep(step, N, a, b, h, mu, c, SV, QV);
+        res = secondStep(step , N, c, SV, QV);
     } while (res.halfDelta * 2 > maxDelta);
 
     double areaEstimator = (b-a) * res.meanV;
@@ -57,7 +57,7 @@ void ControlVariable::setSeed(const std::seed_seq &seed) {
     generator.seed(copy);
 }
 
-ControlVariable::ResultFirst ControlVariable::firstStep(size_t M, double a, double b, const PiecewiseLinearFunction& h, double mu) {
+ControlVariable::ResultFirst ControlVariable::firstStep(size_t M) {
     // phase 1: on genere un "petit" echantillon de taille M
     std::vector<double> yks, zks;
     yks.reserve(M), zks.reserve(M);
@@ -97,9 +97,7 @@ ControlVariable::ResultFirst ControlVariable::firstStep(size_t M, double a, doub
     return {SV, QV, c};
 }
 
-ControlVariable::ResultSecond ControlVariable::secondStep(size_t step, size_t& N, double a, double b,
-                                                         const PiecewiseLinearFunction& h, double mu, double c,
-                                                         double& SV, double& QV) {
+ControlVariable::ResultSecond ControlVariable::secondStep(size_t step, size_t& N, double c, double& SV, double& QV) {
     for (size_t i = 0; i < step; ++i) {
         double X = distribution(generator) * (b - a) + a;
         double Y = g(X), Z = h(X);

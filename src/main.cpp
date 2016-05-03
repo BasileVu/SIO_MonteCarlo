@@ -27,9 +27,9 @@ int main () {
     size_t numPointsPWLFunc = 15;
 
     // largeur max de l'IC à 95%
-    double deltaMax = 0.1;
+    double deltaMax = 1;
 
-    size_t step = 10000;
+    size_t step = 100000;
 
     // graine utilisee pour les generateurs
     seed_seq seed = {24, 512, 42};
@@ -71,11 +71,11 @@ int main () {
     }
 
     {
-        ControlVariable cv(g);
+        ControlVariable cv(g, a, b, points.xs, points.ys);
         cv.setSeed(seed);
 
         clock_t start = clock();
-        MonteCarloMethod::Sampling s = cv.sample(M, deltaMax, step, a, b, points.xs, points.ys);
+        MonteCarloMethod::Sampling s = cv.sample(M, deltaMax, step);
 
         cout << "-- Methode de la variable de controle --" << endl;
         cout << " N. de generations : " << s.N << endl;

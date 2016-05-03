@@ -8,14 +8,17 @@ private:
     std::mt19937_64 generator;
     std::uniform_real_distribution<double> distribution;
 
+    PiecewiseLinearFunction h;
+
+    double a, b;
+    double mu;
+
 public:
-    ControlVariable(const Func &g);
+    ControlVariable(const Func& g, double a, double b, const std::vector<double>& xs, const std::vector<double>& ys);
 
-    Sampling sample(size_t M, size_t N, double a, double b,
-                    const std::vector<double>& xs, const std::vector<double>& ys);
+    Sampling sample(size_t M, size_t N);
 
-    Sampling sample(size_t M, double maxDelta, size_t step, double a, double b,
-                    const std::vector<double>& xs, const std::vector<double>& ys);
+    Sampling sample(size_t M, double maxDelta, size_t step);
 
     void setSeed(const std::seed_seq& seed);
 
@@ -32,10 +35,9 @@ private:
     };
 
     // TODO
-    ResultFirst firstStep(size_t M, double a, double b, const PiecewiseLinearFunction &h, double mu);
+    ResultFirst firstStep(size_t M);
 
-    ResultSecond secondStep(size_t step, size_t& N, double a, double b, const PiecewiseLinearFunction& h,
-                                            double mu, double c, double& SV, double& QV);
+    ResultSecond secondStep(size_t step, size_t& N, double c, double& SV, double& QV);
 };
 
 #endif // CONTROL_VARIABLE_H
