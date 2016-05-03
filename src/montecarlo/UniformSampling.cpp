@@ -34,6 +34,7 @@ MonteCarloMethod::Sampling UniformSampling::sample(double maxDelta, size_t step,
     return {areaEstimator, ConfidenceInterval(areaEstimator, res.halfDelta), N};
 }
 
+
 UniformSampling::Result UniformSampling::sample(size_t step, size_t& N, double a, double b, double& S, double& Q) {
 
     for (size_t i = 0; i < step; ++i) {

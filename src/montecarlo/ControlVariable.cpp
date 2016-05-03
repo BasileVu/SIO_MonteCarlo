@@ -12,7 +12,7 @@ MonteCarloMethod::Sampling ControlVariable::sample(size_t M, size_t N, double a,
     // TODO preconditions
 
     PiecewiseLinearFunction h(xs, ys);
-    double mu = h.A / (b-a);
+    double mu = h.A / (b-a); //
 
     // phase 1: on genere un "petit" echantillon de taille M
     ControlVariable::ResultFirst firstRes = firstStep(M, a, b, h, mu);
@@ -78,14 +78,14 @@ ControlVariable::ResultFirst ControlVariable::firstStep(size_t M, double a, doub
     varZ /= M;
     meanY /= M;
 
-    double varYZ = 0;
+    double covYZ = 0;
     for (size_t i = 0; i < M; ++i) {
-        varYZ += (yks[i] - meanY) * (zks[i] - mu);
+        covYZ += (yks[i] - meanY) * (zks[i] - mu);
     }
 
-    varYZ /= M;
+    covYZ /= M;
 
-    double c = -(varYZ / varZ);
+    double c = -(covYZ / varZ);
 
     double SV = 0, QV = 0;
     for (size_t i = 0; i < M; ++i) {
@@ -111,7 +111,7 @@ ControlVariable::ResultSecond ControlVariable::secondStep(size_t step, size_t& N
     N += step;
 
     double meanV = SV / N;
-    double varV = (QV / N) - meanV;
+    double varV = (QV / N) - meanV*meanV;
     double halfDelta = 1.96 * (b-a) * sqrt(varV / N);
 
     return {meanV, halfDelta};

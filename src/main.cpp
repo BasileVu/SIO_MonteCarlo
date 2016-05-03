@@ -24,10 +24,10 @@ int main () {
     size_t M = 10000, N = 1000000;
 
     // nombre de points a utiliser pour la fonction affine par morceaux
-    size_t numPointsPWLFunc = 2;
+    size_t numPointsPWLFunc = 15;
 
     // largeur max de l'IC à 95%
-    double deltaMax = 1;
+    double deltaMax = 0.1;
 
     size_t step = 10000;
 

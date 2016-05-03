@@ -1,5 +1,5 @@
-#ifndef CONTROLVARIABLE_H
-#define CONTROLVARIABLE_H
+#ifndef CONTROL_VARIABLE_H
+#define CONTROL_VARIABLE_H
 
 #include "MonteCarloMethod.h"
 
@@ -38,4 +38,4 @@ private:
                                             double mu, double c, double& SV, double& QV);
 };
 
-#endif // CONTROLVARIABLE_H
+#endif // CONTROL_VARIABLE_H
