@@ -6,31 +6,28 @@
 ControlVariable::ControlVariable(const Func& g, double a, double b,
                                  const std::vector<double>& xs, const std::vector<double>& ys)
         :
-        MonteCarloMethod(g),
+        MonteCarloMethod(g), a(a), b(b),
         distribution(std::uniform_real_distribution<double>(0, 1)),
-        h(xs, ys), a(a), b(b)
+        h(xs, ys)
 
 {
+    // TODO preconditions
     mu = h.A / (b-a);
 }
 
 MonteCarloMethod::Sampling ControlVariable::sample(size_t M, size_t N) {
 
-    // TODO preconditions
-
     // phase 1: on genere un "petit" echantillon de taille M
     ControlVariable::ResultFirst firstRes = firstStep(M);
 
     double SV = firstRes.SV, QV = firstRes.QV, c = firstRes.c;
+    size_t step = N - M;
+    size_t tmpN = M;
 
     // phase 2 : on poursuit l'echantillonage jusqu'a la taille de N desiree
-    size_t step = N - M; // nombre d'echantillons a generer
-    size_t tmpN = M;
+    // nombre d'echantillons a generer
     ControlVariable::ResultSecond secondRes = secondStep(step, tmpN, c, SV, QV);
-
-    double areaEstimator = (b-a) * secondRes.meanV;
-
-    return {areaEstimator, ConfidenceInterval(areaEstimator, secondRes.halfDelta), N};
+    return createSampling(secondRes.meanV, secondRes.halfDelta, N);
 }
 
 MonteCarloMethod::Sampling ControlVariable::sample(size_t M, double maxDelta, size_t step) {
@@ -42,14 +39,12 @@ MonteCarloMethod::Sampling ControlVariable::sample(size_t M, double maxDelta, si
     size_t N = M;
 
     // phase 2 : on poursuit l'echantillonage jusqu'a la largeur de l'IC desiree
-    ResultSecond res;
+    ResultSecond secondRes;
     do {
-        res = secondStep(step , N, c, SV, QV);
-    } while (res.halfDelta * 2 > maxDelta);
+        secondRes = secondStep(step , N, c, SV, QV);
+    } while (secondRes.halfDelta * 2 > maxDelta);
 
-    double areaEstimator = (b-a) * res.meanV;
-
-    return {areaEstimator, ConfidenceInterval(areaEstimator, res.halfDelta), N};
+    return createSampling(secondRes.meanV, secondRes.halfDelta, N);
 }
 
 void ControlVariable::setSeed(const std::seed_seq &seed) {
@@ -58,6 +53,7 @@ void ControlVariable::setSeed(const std::seed_seq &seed) {
 }
 
 ControlVariable::ResultFirst ControlVariable::firstStep(size_t M) {
+
     // phase 1: on genere un "petit" echantillon de taille M
     std::vector<double> yks, zks;
     yks.reserve(M), zks.reserve(M);
@@ -98,6 +94,7 @@ ControlVariable::ResultFirst ControlVariable::firstStep(size_t M) {
 }
 
 ControlVariable::ResultSecond ControlVariable::secondStep(size_t step, size_t& N, double c, double& SV, double& QV) {
+
     for (size_t i = 0; i < step; ++i) {
         double X = distribution(generator) * (b - a) + a;
         double Y = g(X), Z = h(X);
@@ -109,10 +106,17 @@ ControlVariable::ResultSecond ControlVariable::secondStep(size_t step, size_t& N
     N += step;
 
     double meanV = SV / N;
-    double varV = (QV / N) - meanV*meanV;
+    double varV = (QV / N) - meanV * meanV;
     double halfDelta = 1.96 * (b-a) * sqrt(varV / N);
 
     return {meanV, halfDelta};
 }
+
+MonteCarloMethod::Sampling ControlVariable::createSampling(double meanV, double halfDelta, size_t N) {
+    double areaEstimator = (b-a) * meanV;
+    return {areaEstimator, ConfidenceInterval(areaEstimator, halfDelta), N};
+}
+
+
 
 

@@ -38,6 +38,8 @@ private:
     ResultFirst firstStep(size_t M);
 
     ResultSecond secondStep(size_t step, size_t& N, double c, double& SV, double& QV);
+
+    Sampling createSampling(double meanV, double halfDelta, size_t N);
 };
 
 #endif // CONTROL_VARIABLE_H
