@@ -38,11 +38,11 @@ int main () {
     cout << endl;
 
     {
-        UniformSampling us(g);
+        UniformSampling us(g, a, b);
         us.setSeed(seed);
 
         clock_t start = clock();
-        MonteCarloMethod::Sampling s = us.sample(deltaMax, step, a, b);
+        MonteCarloMethod::Sampling s = us.sample(deltaMax, step);
 
         cout << "-- Echantillonage uniforme --" << endl;
         cout << " N. de generations : " << s.N << endl;
