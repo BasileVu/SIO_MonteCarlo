@@ -12,7 +12,7 @@ MonteCarloMethod::Sampling ControlVariable::sample(size_t M, size_t N, double a,
     // TODO preconditions
 
     PiecewiseLinearFunction h(xs, ys);
-    double mu = Stats::expectedValue(h);
+    double mu = h.A / (b-a);
 
     // phase 1: on genere un "petit" echantillon de taille M
     ControlVariable::ResultFirst firstRes = firstStep(M, a, b, h, mu);
@@ -21,7 +21,7 @@ MonteCarloMethod::Sampling ControlVariable::sample(size_t M, size_t N, double a,
 
     // phase 2 : on poursuit l'echantillonage jusqu'a la taille de N desiree
     size_t step = N - M; // nombre d'echantillons a generer
-    size_t tmpN = 0;
+    size_t tmpN = M;
     ControlVariable::ResultSecond secondRes = secondStep(step, tmpN, a, b, h, mu, c, SV, QV);
 
     double areaEstimator = (b-a) * secondRes.meanV;
@@ -33,7 +33,7 @@ MonteCarloMethod::Sampling ControlVariable::sample(size_t M, double maxDelta, si
                                                    const std::vector<double>& xs, const std::vector<double>& ys) {
 
     PiecewiseLinearFunction h(xs, ys);
-    double mu = Stats::expectedValue(h);
+    double mu = h.A / (b-a);
 
     // phase 1: on genere un "petit" echantillon de taille M
     ControlVariable::ResultFirst firstRes = firstStep(M, a, b, h, mu);
@@ -65,7 +65,7 @@ ControlVariable::ResultFirst ControlVariable::firstStep(size_t M, double a, doub
     for (size_t i = 0; i < M; ++i) {
         double X = distribution(generator) * (b-a) + a;
         yks.push_back(g(X));
-        zks.push_back(h(X) / h.A);
+        zks.push_back(h(X));
     }
 
     double varZ = 0, meanY = 0;
@@ -102,7 +102,7 @@ ControlVariable::ResultSecond ControlVariable::secondStep(size_t step, size_t& N
                                                          double& SV, double& QV) {
     for (size_t i = 0; i < step; ++i) {
         double X = distribution(generator) * (b - a) + a;
-        double Y = g(X), Z = h(X) / h.A;
+        double Y = g(X), Z = h(X);
         double V = Y + c * (Z - mu);
         SV += V;
         QV += V * V;
