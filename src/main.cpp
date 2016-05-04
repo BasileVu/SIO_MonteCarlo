@@ -29,6 +29,9 @@ int main () {
     // largeur max de l'IC à 95%
     double deltaMax = 1;
 
+    // temps maximum alloue pour chaque methode (en secondes)
+    double maxTime = 5;
+
     size_t step = 100000;
 
     // graine utilisee pour les generateurs
@@ -42,7 +45,7 @@ int main () {
         us.setSeed(seed);
 
         clock_t start = clock();
-        MonteCarloMethod::Sampling s = us.sample(deltaMax, step);
+        MonteCarloMethod::Sampling s = us.sampleWithMaxTime(maxTime, step);
 
         cout << "-- Echantillonage uniforme --" << endl;
         cout << " N. de generations : " << s.N << endl;
@@ -60,7 +63,7 @@ int main () {
         is.setSeed(seed);
 
         clock_t start = clock();
-        MonteCarloMethod::Sampling s = is.sampleWithMaxTime(10, step);
+        MonteCarloMethod::Sampling s = is.sampleWithMaxTime(maxTime, step);
 
         cout << "-- Echantillonage preferentiel --" << endl;
         cout << " N. de generations : " << s.N << endl;

@@ -41,7 +41,6 @@ MonteCarloMethod::Sampling ImportanceSampling::sampleWithMaxTime(double maxTime,
         clock_t beg = clock();
         res = sample(step, N, S, Q);
         curTime += (double)(clock() - beg) / CLOCKS_PER_SEC;
-
     } while (curTime < maxTime);
 
     return {res.mean, ConfidenceInterval(res.mean, res.halfDelta), N};

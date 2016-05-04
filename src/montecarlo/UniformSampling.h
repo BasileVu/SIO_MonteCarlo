@@ -13,9 +13,11 @@ private:
 public:
     UniformSampling(const Func& g, double a, double b);
 
-    Sampling sample(size_t N);
+    Sampling sampleWithSize(size_t N);
 
-    Sampling sample(double maxDelta, size_t step);
+    Sampling sampleWithMaxDelta(double maxDelta, size_t step);
+
+    Sampling sampleWithMaxTime(double maxTime, size_t step);
 
     void setSeed(const std::seed_seq& seed);
 
