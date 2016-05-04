@@ -1,5 +1,4 @@
-#include <vector>
-#include <algorithm>
+#include <ctime>
 
 #include "ControlVariable.h"
 
@@ -15,7 +14,7 @@ ControlVariable::ControlVariable(const Func& g, double a, double b,
     mu = h.A / (b-a);
 }
 
-MonteCarloMethod::Sampling ControlVariable::sample(size_t M, size_t N) {
+MonteCarloMethod::Sampling ControlVariable::sampleWithSize(size_t M, size_t N) {
 
     // phase 1: on genere un "petit" echantillon de taille M
     ControlVariable::ResultFirst firstRes = firstStep(M);
@@ -30,7 +29,7 @@ MonteCarloMethod::Sampling ControlVariable::sample(size_t M, size_t N) {
     return createSampling(secondRes.meanV, secondRes.halfDelta, N);
 }
 
-MonteCarloMethod::Sampling ControlVariable::sample(size_t M, double maxDelta, size_t step) {
+MonteCarloMethod::Sampling ControlVariable::sampleWithMaxDelta(size_t M, double maxDelta, size_t step) {
 
     // phase 1: on genere un "petit" echantillon de taille M
     ControlVariable::ResultFirst firstRes = firstStep(M);
@@ -43,6 +42,26 @@ MonteCarloMethod::Sampling ControlVariable::sample(size_t M, double maxDelta, si
     do {
         secondRes = secondStep(step , N, c, SV, QV);
     } while (secondRes.halfDelta * 2 > maxDelta);
+
+    return createSampling(secondRes.meanV, secondRes.halfDelta, N);
+}
+
+MonteCarloMethod::Sampling ControlVariable::sampleWithMaxTime(size_t M, double maxTime, size_t step) {
+
+    // phase 1: on genere un "petit" echantillon de taille M
+    ControlVariable::ResultFirst firstRes = firstStep(M);
+
+    double SV = firstRes.SV, QV = firstRes.QV, c = firstRes.c;
+    size_t N = M;
+    double curTime = 0;
+
+    // phase 2 : on poursuit l'echantillonage jusqu'a atteindre le temps maximal desire
+    ResultSecond secondRes;
+    do {
+        clock_t beg = clock();
+        secondRes = secondStep(step , N, c, SV, QV);
+        curTime += (double)(clock() - beg) / CLOCKS_PER_SEC;
+    } while (curTime < maxTime);
 
     return createSampling(secondRes.meanV, secondRes.halfDelta, N);
 }

@@ -30,7 +30,7 @@ int main () {
     double deltaMax = 1;
 
     // temps maximum alloue pour chaque methode (en secondes)
-    double maxTime = 5;
+    double maxTime = 3;
 
     size_t step = 100000;
 
@@ -78,7 +78,7 @@ int main () {
         cv.setSeed(seed);
 
         clock_t start = clock();
-        MonteCarloMethod::Sampling s = cv.sample(M, deltaMax, step);
+        MonteCarloMethod::Sampling s = cv.sampleWithMaxTime(M, maxTime, step);
 
         cout << "-- Methode de la variable de controle --" << endl;
         cout << " N. de generations : " << s.N << endl;

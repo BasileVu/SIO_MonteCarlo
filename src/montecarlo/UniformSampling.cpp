@@ -38,7 +38,7 @@ MonteCarloMethod::Sampling UniformSampling::sampleWithMaxTime(double maxTime, si
     size_t N = 0;
     double curTime = 0;
 
-    // genere des valeurs tant que la largeur de l'intervalle de confiance est plus grande que "maxDelta"
+    // genere des valeurs tant que le temps maximal d'execution n'est pas atteint
     Result res;
     do {
         clock_t beg = clock();
