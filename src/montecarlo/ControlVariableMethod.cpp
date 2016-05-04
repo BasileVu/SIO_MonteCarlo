@@ -1,6 +1,6 @@
 #include <ctime>
 
-#include "ControlVariable.h"
+#include "ControlVariableMethod.h"
 
 ControlVariable::ControlVariable(const Func& g, double a, double b,
                                  const std::vector<double>& xs, const std::vector<double>& ys)

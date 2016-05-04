@@ -6,7 +6,7 @@
 
 #include "montecarlo/UniformSampling.h"
 #include "montecarlo/ImportanceSampling.h"
-#include "montecarlo/ControlVariable.h"
+#include "montecarlo/ControlVariableMethod.h"
 
 using namespace std;
 
@@ -30,7 +30,7 @@ int main () {
     double deltaMax = 1;
 
     // temps maximum alloue pour chaque methode (en secondes)
-    double maxTime = 3;
+    double maxTime = 2;
 
     size_t step = 100000;
 
