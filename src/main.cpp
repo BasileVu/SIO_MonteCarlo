@@ -56,11 +56,11 @@ int main () {
     Points points = Stats::createPoints(numPointsPWLFunc, g, a, b);
 
     {
-        ImportanceSampling is(g);
+        ImportanceSampling is(g, points.xs, points.ys);
         is.setSeed(seed);
 
         clock_t start = clock();
-        MonteCarloMethod::Sampling s = is.sample(deltaMax, step, points.xs, points.ys);
+        MonteCarloMethod::Sampling s = is.sample(deltaMax, step);
 
         cout << "-- Echantillonage preferentiel --" << endl;
         cout << " N. de generations : " << s.N << endl;

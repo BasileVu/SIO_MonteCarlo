@@ -1,48 +1,42 @@
 #include "ImportanceSampling.h"
 #include "../generators/RandomValueGenerator.h"
 
-ImportanceSampling::ImportanceSampling(const std::function<double(double)>& g)
-        : MonteCarloMethod(g) {}
+ImportanceSampling::ImportanceSampling(const std::function<double(double)>& g, const std::vector<double>& xs, const std::vector<double>& ys)
+        : MonteCarloMethod(g), generator(xs, ys) {}
 
-MonteCarloMethod::Sampling ImportanceSampling::sample(size_t N, const std::vector<double> xs, const std::vector<double> ys) {
+MonteCarloMethod::Sampling ImportanceSampling::sample(size_t N) {
 
     double S = 0, Q = 0;
     size_t tmpN = 0;
 
-    InverseFunctions inv(xs, ys);
-    inv.setSeed(seed);
-    Result res = sample(N, tmpN, inv, S, Q);
+    Result res = sample(N, tmpN, S, Q);
 
     return {res.mean, ConfidenceInterval(res.mean, res.halfDelta), N};
 }
 
-MonteCarloMethod::Sampling ImportanceSampling::sample(double maxDelta, size_t step,
-                                    const std::vector<double> xs, const std::vector<double> ys) {
+MonteCarloMethod::Sampling ImportanceSampling::sample(double maxDelta, size_t step) {
 
     double S = 0, Q = 0;
     size_t N = 0;
 
-    InverseFunctions inv(xs, ys);
-    inv.setSeed(seed);
-
     // genere des valeurs tant que la largeur de l'intervalle de confiance est plus grande que "maxDelta"
     Result res;
     do {
-        res = sample(step, N, inv, S, Q);
+        res = sample(step, N, S, Q);
     } while (res.halfDelta * 2 > maxDelta);
 
     return {res.mean, ConfidenceInterval(res.mean, res.halfDelta), N};
 }
 
 void ImportanceSampling::setSeed(const std::seed_seq &seed) {
-    this->seed = seed;
+    generator.setSeed(seed);
 }
 
-ImportanceSampling::Result ImportanceSampling::sample(size_t step, size_t& N, RandomValueGenerator& rvg, double& S, double& Q) {
-    const PiecewiseLinearFunction& f = rvg.getPWLFunc();
+ImportanceSampling::Result ImportanceSampling::sample(size_t step, size_t& N, double& S, double& Q) {
+    const PiecewiseLinearFunction& f = generator.getPWLFunc();
 
     for (size_t i = 0; i < step; ++i) {
-        double X = rvg.generate();
+        double X = generator.generate();
         double Y = g(X) / f(X);
 
         S += Y;
