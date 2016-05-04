@@ -4,6 +4,7 @@
 #include <iostream>
 #include <ctime>
 #include <string>
+#include <sstream>
 
 #include "montecarlo/UniformSampling.h"
 #include "montecarlo/ImportanceSampling.h"
@@ -16,6 +17,7 @@ void printSampling(const MonteCarloMethod::Sampling& s, const string& name, doub
     cout << " N. de generations : " << s.N << endl;
     cout << " Aire estimee      : " << s.areaEstimator << endl;
     cout << " IC                : " << s.confidenceInterval << endl;
+    cout << " Largeur de l'IC   : " << s.confidenceInterval.delta << endl;
     cout << " Temps d'execution : " << timeTaken << "s" << endl;
     cout << endl;
 }
@@ -37,7 +39,7 @@ int main () {
     size_t numPointsPWLFunc = 15;
 
     // largeur max de l'IC à 95%
-    double deltaMax = 1;
+    double deltaMax = 0.1;
 
     // temps maximum alloue pour chaque methode (en secondes)
     double maxTime = 2;
@@ -47,18 +49,25 @@ int main () {
     // graine utilisee pour les generateurs
     seed_seq seed = {24, 512, 42};
 
-    cout << "Largeur max de l'IC : " << deltaMax << endl;
     cout << endl;
 
     {
         UniformSampling us(g, a, b);
         us.setSeed(seed);
 
-        clock_t start = clock();
-        MonteCarloMethod::Sampling s = us.sampleWithMaxTime(maxTime, step);
-        double timeTaken = (double)(clock() - start) / CLOCKS_PER_SEC;
+        clock_t start;
 
-        printSampling(s, "Echantillonage uniforme", timeTaken);
+        stringstream name;
+        name << "Echantillonage uniforme - largeur max de l'IC fixee (" << deltaMax << ")";
+        start = clock();
+        MonteCarloMethod::Sampling s = us.sampleWithMaxDelta(deltaMax, step);
+        printSampling(s, name.str(), (double)(clock() - start) / CLOCKS_PER_SEC);
+
+        name.str(string());
+        name << "Echantillonage uniforme - temps max fixe (" << maxTime << " s)";
+        start = clock();
+        s = us.sampleWithMaxTime(maxTime, step);
+        printSampling(s, name.str(), (double)(clock() - start) / CLOCKS_PER_SEC);
 
     }
 
@@ -69,22 +78,39 @@ int main () {
         ImportanceSampling is(g, points.xs, points.ys);
         is.setSeed(seed);
 
-        clock_t start = clock();
-        MonteCarloMethod::Sampling s = is.sampleWithMaxTime(maxTime, step);
-        double timeTaken = (double)(clock() - start) / CLOCKS_PER_SEC;
+        clock_t start;
 
-        printSampling(s, "Echantillonage preferentiel", timeTaken);
+        stringstream name;
+        name << "Echantillonage preferentiel - largeur max de l'IC fixee (" << deltaMax << ")";
+        start = clock();
+        MonteCarloMethod::Sampling s = is.sampleWithMaxDelta(deltaMax, step);
+        printSampling(s, name.str(), (double)(clock() - start) / CLOCKS_PER_SEC);
+
+        name.str(string());
+        name << "Echantillonage preferentiel - temps max fixe (" << maxTime << " s)";
+        start = clock();
+        s = is.sampleWithMaxTime(maxTime, step);
+        printSampling(s, name.str(), (double)(clock() - start) / CLOCKS_PER_SEC);
     }
 
     {
+        cout << "Avec M = " << M << " :" << endl;
         ControlVariable cv(g, a, b, points.xs, points.ys);
         cv.setSeed(seed);
 
-        clock_t start = clock();
-        MonteCarloMethod::Sampling s = cv.sampleWithMaxTime(M, maxTime, step);
-        double timeTaken = (double)(clock() - start) / CLOCKS_PER_SEC;
+        clock_t start;
 
-        printSampling(s, "Methode de la variable de controle", timeTaken);
+        stringstream name;
+        name << "Methode de la variable de controle - largeur max de l'IC fixee (" << deltaMax << ")";
+        start = clock();
+        MonteCarloMethod::Sampling s = cv.sampleWithMaxDelta(M, deltaMax, step);
+        printSampling(s, name.str(), (double)(clock() - start) / CLOCKS_PER_SEC);
+
+        name.str(string());
+        name << "Methode de la variable de controle - temps max fixe (" << maxTime << " s)";
+        start = clock();
+        s = cv.sampleWithMaxTime(M, maxTime, step);
+        printSampling(s, name.str(), (double)(clock() - start) / CLOCKS_PER_SEC);
     }
 
 
