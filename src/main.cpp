@@ -3,12 +3,22 @@
 #include <functional>
 #include <iostream>
 #include <ctime>
+#include <string>
 
 #include "montecarlo/UniformSampling.h"
 #include "montecarlo/ImportanceSampling.h"
 #include "montecarlo/ControlVariableMethod.h"
 
 using namespace std;
+
+void printSampling(const MonteCarloMethod::Sampling& s, const string& name, double timeTaken) {
+    cout << "-- " << name << " --" << endl;
+    cout << " N. de generations : " << s.N << endl;
+    cout << " Aire estimee      : " << s.areaEstimator << endl;
+    cout << " IC                : " << s.confidenceInterval << endl;
+    cout << " Temps d'execution : " << timeTaken << "s" << endl;
+    cout << endl;
+}
 
 int main () {
 
@@ -46,13 +56,10 @@ int main () {
 
         clock_t start = clock();
         MonteCarloMethod::Sampling s = us.sampleWithMaxTime(maxTime, step);
+        double timeTaken = (double)(clock() - start) / CLOCKS_PER_SEC;
 
-        cout << "-- Echantillonage uniforme --" << endl;
-        cout << " N. de generations : " << s.N << endl;
-        cout << " Aire estimee      : " << s.areaEstimator << endl;
-        cout << " IC                : " << s.confidenceInterval << endl;
-        cout << " Temps d'execution : " << (double) (clock() - start) / CLOCKS_PER_SEC << "s" << endl;
-        cout << endl;
+        printSampling(s, "Echantillonage uniforme", timeTaken);
+
     }
 
     // creation des points de la fonction affine par morceaux
@@ -64,13 +71,9 @@ int main () {
 
         clock_t start = clock();
         MonteCarloMethod::Sampling s = is.sampleWithMaxTime(maxTime, step);
+        double timeTaken = (double)(clock() - start) / CLOCKS_PER_SEC;
 
-        cout << "-- Echantillonage preferentiel --" << endl;
-        cout << " N. de generations : " << s.N << endl;
-        cout << " Aire estimee      : " << s.areaEstimator << endl;
-        cout << " IC                : " << s.confidenceInterval << endl;
-        cout << " Temps d'execution : " << (double) (clock() - start) / CLOCKS_PER_SEC << "s" << endl;
-        cout << endl;
+        printSampling(s, "Echantillonage preferentiel", timeTaken);
     }
 
     {
@@ -79,13 +82,9 @@ int main () {
 
         clock_t start = clock();
         MonteCarloMethod::Sampling s = cv.sampleWithMaxTime(M, maxTime, step);
+        double timeTaken = (double)(clock() - start) / CLOCKS_PER_SEC;
 
-        cout << "-- Methode de la variable de controle --" << endl;
-        cout << " N. de generations : " << s.N << endl;
-        cout << " Aire estimee      : " << s.areaEstimator << endl;
-        cout << " IC                : " << s.confidenceInterval << endl;
-        cout << " Temps d'execution : " << (double) (clock() - start) / CLOCKS_PER_SEC << "s" << endl;
-        cout << endl;
+        printSampling(s, "Methode de la variable de controle", timeTaken);
     }
 
 
