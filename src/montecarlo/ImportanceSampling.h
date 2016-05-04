@@ -11,9 +11,11 @@ private:
 public:
     ImportanceSampling(const Func& g, const std::vector<double>& xs, const std::vector<double>& ys);
 
-    Sampling sample(double maxDelta, size_t step);
+    Sampling sampleWithSize(size_t N);
 
-    Sampling sample(size_t N);
+    Sampling sampleWithMaxDelta(double maxDelta, size_t step);
+
+    Sampling sampleWithMaxTime(double maxTime, size_t step);
 
     void setSeed(const std::seed_seq& seed);
 

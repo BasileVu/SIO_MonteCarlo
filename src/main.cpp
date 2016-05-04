@@ -60,7 +60,7 @@ int main () {
         is.setSeed(seed);
 
         clock_t start = clock();
-        MonteCarloMethod::Sampling s = is.sample(deltaMax, step);
+        MonteCarloMethod::Sampling s = is.sampleWithMaxTime(10, step);
 
         cout << "-- Echantillonage preferentiel --" << endl;
         cout << " N. de generations : " << s.N << endl;
