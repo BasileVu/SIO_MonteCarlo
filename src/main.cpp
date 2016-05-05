@@ -44,6 +44,7 @@ int main () {
     // temps maximum alloue pour chaque methode (en secondes)
     double maxTime = 2;
 
+    // nombre d'étapes a faire dans le cas de generations avec largeur d'IC ou temps limite
     size_t step = 100000;
 
     // graine utilisee pour les generateurs

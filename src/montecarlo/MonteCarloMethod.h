@@ -18,6 +18,7 @@ public:
         double areaEstimator;
         ConfidenceInterval confidenceInterval;
         size_t N;
+        double elapsedTime;
     };
 
     MonteCarloMethod(const Func& g);
