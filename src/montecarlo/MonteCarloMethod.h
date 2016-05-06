@@ -3,6 +3,8 @@
 
 #include <random>
 #include <functional>
+#include <ctime>
+
 #include "../utility/Stats.h"
 
 class MonteCarloMethod {

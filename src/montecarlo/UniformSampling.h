@@ -29,7 +29,7 @@ private:
 
     Result sample(size_t step, size_t &N, double &S, double &Q);
 
-    Sampling createSampling(double mean, double halfDelta, size_t N) const;
+    Sampling createSampling(double mean, double halfDelta, size_t N, double timeElapsed) const;
 };
 
 #endif // UNIFORMS_AMPLING_H

@@ -16,6 +16,8 @@ ControlVariable::ControlVariable(const Func& g, double a, double b,
 
 MonteCarloMethod::Sampling ControlVariable::sampleWithSize(size_t M, size_t N) {
 
+    clock_t start = clock();
+
     // phase 1: on genere un "petit" echantillon de taille M
     ControlVariable::ResultFirst firstRes = firstStep(M);
 
@@ -26,10 +28,12 @@ MonteCarloMethod::Sampling ControlVariable::sampleWithSize(size_t M, size_t N) {
     // phase 2 : on poursuit l'echantillonage jusqu'a la taille de N desiree
     // nombre d'echantillons a generer
     ControlVariable::ResultSecond secondRes = secondStep(step, tmpN, c, SV, QV);
-    return createSampling(secondRes.meanV, secondRes.halfDelta, N);
+    return createSampling(secondRes.meanV, secondRes.halfDelta, N, (double)(clock() - start) / CLOCKS_PER_SEC);
 }
 
 MonteCarloMethod::Sampling ControlVariable::sampleWithMaxDelta(size_t M, double maxDelta, size_t step) {
+
+    clock_t start = clock();
 
     // phase 1: on genere un "petit" echantillon de taille M
     ControlVariable::ResultFirst firstRes = firstStep(M);
@@ -43,7 +47,7 @@ MonteCarloMethod::Sampling ControlVariable::sampleWithMaxDelta(size_t M, double 
         secondRes = secondStep(step , N, c, SV, QV);
     } while (secondRes.halfDelta * 2 > maxDelta);
 
-    return createSampling(secondRes.meanV, secondRes.halfDelta, N);
+    return createSampling(secondRes.meanV, secondRes.halfDelta, N, (double)(clock() - start) / CLOCKS_PER_SEC);
 }
 
 MonteCarloMethod::Sampling ControlVariable::sampleWithMaxTime(size_t M, double maxTime, size_t step) {
@@ -63,7 +67,7 @@ MonteCarloMethod::Sampling ControlVariable::sampleWithMaxTime(size_t M, double m
         curTime += (double)(clock() - beg) / CLOCKS_PER_SEC;
     } while (curTime < maxTime);
 
-    return createSampling(secondRes.meanV, secondRes.halfDelta, N);
+    return createSampling(secondRes.meanV, secondRes.halfDelta, N, curTime);
 }
 
 void ControlVariable::setSeed(const std::seed_seq &seed) {
@@ -131,9 +135,9 @@ ControlVariable::ResultSecond ControlVariable::secondStep(size_t step, size_t& N
     return {meanV, halfDelta};
 }
 
-MonteCarloMethod::Sampling ControlVariable::createSampling(double meanV, double halfDelta, size_t N) {
+MonteCarloMethod::Sampling ControlVariable::createSampling(double meanV, double halfDelta, size_t N, double timeElapsed) {
     double areaEstimator = (b-a) * meanV;
-    return {areaEstimator, ConfidenceInterval(areaEstimator, halfDelta), N};
+    return {areaEstimator, ConfidenceInterval(areaEstimator, halfDelta), N, timeElapsed};
 }
 
 

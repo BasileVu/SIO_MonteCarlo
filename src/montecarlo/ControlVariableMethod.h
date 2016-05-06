@@ -41,7 +41,7 @@ private:
 
     ResultSecond secondStep(size_t step, size_t& N, double c, double& SV, double& QV);
 
-    Sampling createSampling(double meanV, double halfDelta, size_t N);
+    Sampling createSampling(double meanV, double halfDelta, size_t N, double timeElapsed);
 };
 
 #endif // CONTROL_VARIABLE_H

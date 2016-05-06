@@ -4,7 +4,6 @@
 #include <iostream>
 #include <ctime>
 #include <string>
-#include <sstream>
 
 #include "montecarlo/UniformSampling.h"
 #include "montecarlo/ImportanceSampling.h"
@@ -12,13 +11,12 @@
 
 using namespace std;
 
-void printSampling(const MonteCarloMethod::Sampling& s, const string& name, double timeTaken) {
-    cout << "-- " << name << " --" << endl;
+void printSampling(const MonteCarloMethod::Sampling& s) {
     cout << " N. de generations : " << s.N << endl;
     cout << " Aire estimee      : " << s.areaEstimator << endl;
     cout << " IC                : " << s.confidenceInterval << endl;
     cout << " Largeur de l'IC   : " << s.confidenceInterval.delta << endl;
-    cout << " Temps d'execution : " << timeTaken << "s" << endl;
+    cout << " Temps d'execution : " << s.elapsedTime << "s" << endl;
     cout << endl;
 }
 
@@ -39,7 +37,7 @@ int main () {
     size_t numPointsPWLFunc = 15;
 
     // largeur max de l'IC à 95%
-    double deltaMax = 0.1;
+    double deltaMax = 1;
 
     // temps maximum alloue pour chaque methode (en secondes)
     double maxTime = 2;
@@ -50,26 +48,15 @@ int main () {
     // graine utilisee pour les generateurs
     seed_seq seed = {24, 512, 42};
 
-    cout << endl;
-
     {
         UniformSampling us(g, a, b);
         us.setSeed(seed);
 
-        clock_t start;
+        cout << "-- Echantillonage uniforme - largeur max de l'IC fixee (" << deltaMax << ")" << endl;
+        printSampling(us.sampleWithMaxDelta(deltaMax, step));
 
-        stringstream name;
-        name << "Echantillonage uniforme - largeur max de l'IC fixee (" << deltaMax << ")";
-        start = clock();
-        MonteCarloMethod::Sampling s = us.sampleWithMaxDelta(deltaMax, step);
-        printSampling(s, name.str(), (double)(clock() - start) / CLOCKS_PER_SEC);
-
-        name.str(string());
-        name << "Echantillonage uniforme - temps max fixe (" << maxTime << " s)";
-        start = clock();
-        s = us.sampleWithMaxTime(maxTime, step);
-        printSampling(s, name.str(), (double)(clock() - start) / CLOCKS_PER_SEC);
-
+        cout << "-- Echantillonage uniforme - temps max fixe (" << maxTime << " s)" << endl;
+        printSampling(us.sampleWithMaxTime(maxTime, step));
     }
 
     // creation des points de la fonction affine par morceaux
@@ -79,19 +66,12 @@ int main () {
         ImportanceSampling is(g, points.xs, points.ys);
         is.setSeed(seed);
 
-        clock_t start;
+        cout << "Echantillonage preferentiel - largeur max de l'IC fixee (" << deltaMax << ")" << endl;
+        printSampling(is.sampleWithMaxDelta(deltaMax, step));
 
-        stringstream name;
-        name << "Echantillonage preferentiel - largeur max de l'IC fixee (" << deltaMax << ")";
-        start = clock();
-        MonteCarloMethod::Sampling s = is.sampleWithMaxDelta(deltaMax, step);
-        printSampling(s, name.str(), (double)(clock() - start) / CLOCKS_PER_SEC);
+        cout << "Echantillonage preferentiel - temps max fixe (" << maxTime << " s)" << endl;
 
-        name.str(string());
-        name << "Echantillonage preferentiel - temps max fixe (" << maxTime << " s)";
-        start = clock();
-        s = is.sampleWithMaxTime(maxTime, step);
-        printSampling(s, name.str(), (double)(clock() - start) / CLOCKS_PER_SEC);
+        printSampling(is.sampleWithMaxTime(maxTime, step));
     }
 
     {
@@ -99,19 +79,11 @@ int main () {
         ControlVariable cv(g, a, b, points.xs, points.ys);
         cv.setSeed(seed);
 
-        clock_t start;
+        cout << "Methode de la variable de controle - largeur max de l'IC fixee (" << deltaMax << ")" << endl;
+        printSampling(cv.sampleWithMaxDelta(M, deltaMax, step));
 
-        stringstream name;
-        name << "Methode de la variable de controle - largeur max de l'IC fixee (" << deltaMax << ")";
-        start = clock();
-        MonteCarloMethod::Sampling s = cv.sampleWithMaxDelta(M, deltaMax, step);
-        printSampling(s, name.str(), (double)(clock() - start) / CLOCKS_PER_SEC);
-
-        name.str(string());
-        name << "Methode de la variable de controle - temps max fixe (" << maxTime << " s)";
-        start = clock();
-        s = cv.sampleWithMaxTime(M, maxTime, step);
-        printSampling(s, name.str(), (double)(clock() - start) / CLOCKS_PER_SEC);
+        cout << "Methode de la variable de controle - temps max fixe (" << maxTime << " s)" << endl;
+        printSampling(cv.sampleWithMaxTime(M, maxTime, step));
     }
 
 
