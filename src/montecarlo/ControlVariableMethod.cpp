@@ -50,7 +50,7 @@ MonteCarloMethod::Sampling ControlVariable::sampleWithMaxDelta(size_t M, double 
     return createSampling(secondRes.meanV, secondRes.halfDelta, N, (double)(clock() - start) / CLOCKS_PER_SEC);
 }
 
-MonteCarloMethod::Sampling ControlVariable::sampleWithMaxTime(size_t M, double maxTime, size_t step) {
+MonteCarloMethod::Sampling ControlVariable::sampleWithMinTime(size_t M, double maxTime, size_t step) {
 
     // phase 1: on genere un "petit" echantillon de taille M
     ControlVariable::ResultFirst firstRes = firstStep(M);

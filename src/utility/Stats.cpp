@@ -1,17 +1,20 @@
 #include <sstream>
+#include <iomanip>
 
 #include "Stats.h"
 
 std::string ConfidenceInterval::toString() const {
     std::stringstream ss;
-    ss << "[" << lower << "," << upper << "]";
+    ss << "[" << std::fixed << std::setprecision(displayPrecision) << lower << ",";
+    ss << std::setprecision(displayPrecision) << upper << "]";
     return ss.str();
 }
 
-ConfidenceInterval::ConfidenceInterval(double center, double halfDelta) {
+ConfidenceInterval::ConfidenceInterval(double center, double halfDelta, size_t precision) {
     lower = center - halfDelta;
     upper = center + halfDelta;
     delta = halfDelta * 2;
+    displayPrecision = precision;
 }
 
 

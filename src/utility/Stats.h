@@ -16,8 +16,9 @@ struct ConfidenceInterval {
     double lower; // borne inferieure
     double upper; // borne superieure
     double delta; // difference entre les deux bornes
+    size_t displayPrecision; // precision pour l'affichage
 
-    ConfidenceInterval(double center, double halfDelta);
+    ConfidenceInterval(double center, double halfDelta, size_t precision = 3);
 
     /**
      * \brief Cree la representation sous forme de chaine de caracteres de l'intervalle de confiance.

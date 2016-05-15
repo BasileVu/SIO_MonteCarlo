@@ -36,7 +36,7 @@ MonteCarloMethod::Sampling UniformSampling::sampleWithMaxDelta(double maxDelta, 
     return createSampling(res.mean, res.halfDelta, N, (double)(clock() - start) / CLOCKS_PER_SEC);
 }
 
-MonteCarloMethod::Sampling UniformSampling::sampleWithMaxTime(double maxTime, size_t step) {
+MonteCarloMethod::Sampling UniformSampling::sampleWithMinTime(double maxTime, size_t step) {
 
     double S = 0, Q = 0;
     size_t N = 0;

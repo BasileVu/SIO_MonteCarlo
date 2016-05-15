@@ -15,7 +15,7 @@ public:
 
     Sampling sampleWithMaxDelta(double maxDelta, size_t step);
 
-    Sampling sampleWithMaxTime(double maxTime, size_t step);
+    Sampling sampleWithMinTime(double maxTime, size_t step);
 
     void setSeed(const std::seed_seq& seed);
 
