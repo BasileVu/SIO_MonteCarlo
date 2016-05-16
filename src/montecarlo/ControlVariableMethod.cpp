@@ -44,7 +44,7 @@ MonteCarloMethod::Sampling ControlVariable::sampleWithMaxWidth(size_t M, double 
     return createSampling((double)(clock() - start) / CLOCKS_PER_SEC);
 }
 
-MonteCarloMethod::Sampling ControlVariable::sampleWithMinTime(size_t M, double maxTime, size_t step) {
+MonteCarloMethod::Sampling ControlVariable::sampleWithMinTime(size_t M, double minTime, size_t step) {
 
     // phase 1 : calcul de la constante 'c'
     computeConstant(M);
@@ -57,7 +57,7 @@ MonteCarloMethod::Sampling ControlVariable::sampleWithMinTime(size_t M, double m
         clock_t beg = clock();
         sample(step);
         curTime += (double)(clock() - beg) / CLOCKS_PER_SEC;
-    } while (curTime < maxTime);
+    } while (curTime < minTime);
 
     return createSampling(curTime);
 }
@@ -75,7 +75,7 @@ void ControlVariable::computeConstant(size_t M) {
     yks.reserve(M), zks.reserve(M);
 
     for (size_t i = 0; i < M; ++i) {
-        double X = uniformDistr(mtGenerator) * (b-a) + a;
+        double X = uniformDistr(mtGenerator) * (b-a) + a; // X ~ U(a,b)
         yks.push_back(g(X));
         zks.push_back(h(X));
     }
@@ -109,7 +109,7 @@ void ControlVariable::computeConstant(size_t M) {
 void ControlVariable::sample(size_t step) {
 
     for (size_t i = 0; i < step; ++i) {
-        double X = uniformDistr(mtGenerator) * (b - a) + a;
+        double X = uniformDistr(mtGenerator) * (b - a) + a; // X ~ U(a,b)
         double Y = g(X), Z = h(X);
         double V = Y + c * (Z - mu);
         sum += V;

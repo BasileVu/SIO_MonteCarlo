@@ -6,7 +6,7 @@
 UniformSampling::UniformSampling(const MonteCarloMethod::Func& g, double a, double b)
         :
         MonteCarloMethod(g), a(a), b(b),
-        distribution(std::uniform_real_distribution<double>(0, 1))
+        uniformDistr(std::uniform_real_distribution<double>(0, 1))
 {
     if (b <= a) {
         throw std::invalid_argument("b doit etre plus grand que a");
@@ -45,12 +45,12 @@ MonteCarloMethod::Sampling UniformSampling::sampleWithMinTime(double maxTime, si
 
 void UniformSampling::setSeed(const std::seed_seq &seed) {
     std::seed_seq copy = seed;
-    generator.seed(copy);
+    mtGenerator.seed(copy);
 }
 
 void UniformSampling::sample(size_t step) {
     for (size_t i = 0; i < step; ++i) {
-        double X = distribution(generator) * (b - a) + a;
+        double X = uniformDistr(mtGenerator) * (b - a) + a; // X ~ U(a,b)
         double Y = g(X);
 
         sum += Y;

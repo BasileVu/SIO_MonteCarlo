@@ -5,8 +5,8 @@
 
 class UniformSampling : public MonteCarloMethod {
 private:
-    std::mt19937_64 generator;
-    std::uniform_real_distribution<double> distribution;
+    std::mt19937_64 mtGenerator;
+    std::uniform_real_distribution<double> uniformDistr;
 
     double a, b;
 
