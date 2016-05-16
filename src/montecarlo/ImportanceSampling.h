@@ -25,7 +25,7 @@ private:
         double halfDelta;
     };
 
-    Result sample(size_t step, size_t& N, double& S, double& Q);
+    void sample(size_t step, size_t& N, double& S, double& Q);
 };
 
 #endif // IMPORTANCE_SAMPLING_H

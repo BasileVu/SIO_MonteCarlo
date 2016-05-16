@@ -22,6 +22,15 @@ const string MIN_TIME = "Temps min [s]";
 const string HEADER = "N generations | Aire estimee |         IC         | largeur IC | Temps [s]";
 
 
+void exportSampling(ofstream& ofs, const MonteCarloMethod::Sampling& s) {
+    ofs << s.N << CSV_SEPARATOR;
+    ofs << s.areaEstimator << CSV_SEPARATOR;
+    ofs << s.confidenceInterval << CSV_SEPARATOR;
+    ofs << s.confidenceInterval.lower << CSV_SEPARATOR;
+    ofs << s.confidenceInterval.upper << CSV_SEPARATOR;
+    ofs << s.confidenceInterval.delta << CSV_SEPARATOR;
+    ofs << s.elapsedTime << endl;
+}
 
 void printSampling(const MonteCarloMethod::Sampling& s) {
     cout << setw(13) << s.N << " | ";
@@ -35,13 +44,7 @@ void printSampling(const MonteCarloMethod::Sampling& s) {
 
     if (EXPORT_CSV) {
         ofstream ofs(CSV_FILE, ios_base::app);
-        ofs << s.N << CSV_SEPARATOR;
-        ofs << s.areaEstimator << CSV_SEPARATOR;
-        ofs << s.confidenceInterval << CSV_SEPARATOR;
-        ofs << s.confidenceInterval.lower << CSV_SEPARATOR;
-        ofs << s.confidenceInterval.upper << CSV_SEPARATOR;
-        ofs << s.confidenceInterval.delta << CSV_SEPARATOR;
-        ofs << s.elapsedTime << endl;
+        exportSampling(ofs, s);
         ofs.close();
     }
 }
@@ -60,13 +63,7 @@ void printSampling(double constraint, const MonteCarloMethod::Sampling& s) {
     if (EXPORT_CSV) {
         ofstream ofs(CSV_FILE, ios_base::app);
         ofs << constraint << CSV_SEPARATOR;
-        ofs << s.N << CSV_SEPARATOR;
-        ofs << s.areaEstimator << CSV_SEPARATOR;
-        ofs << s.confidenceInterval << CSV_SEPARATOR;
-        ofs << s.confidenceInterval.lower << CSV_SEPARATOR;
-        ofs << s.confidenceInterval.upper << CSV_SEPARATOR;
-        ofs << s.confidenceInterval.delta << CSV_SEPARATOR;
-        ofs << s.elapsedTime << endl;
+        exportSampling(ofs, s);
         ofs.close();
     }
 }
@@ -91,15 +88,15 @@ int main () {
     seed_seq seed = {24, 512, 42};
 
     list<double> maxWidths;
-    for (double i = 1; i > 0.4; i -= 0.1) {
+    for (double i = 1; i > 0.09; i -= 0.1) {
         maxWidths.push_back(i);
     }
-    /*for (double i = 0.09; i > 0.04; i -= 0.01) {
+    for (double i = 0.09; i > 0.04; i -= 0.01) {
         maxWidths.push_back(i);
-    }*/
+    }
 
     list<double> minTimes;
-    for (double i = 1; i < 2; ++i) {
+    for (double i = 1; i < 30; ++i) {
         minTimes.push_back(i);
     }
 
@@ -122,7 +119,7 @@ int main () {
         is.setSeed(seed);
         cv.setSeed(seed);
 
-        const size_t N = 10000000, M = 10000;
+        const size_t N = 100000, M = 10000;
 
         cout << "-- Echantillonage uniforme --" << endl;
         cout << HEADER << endl;
@@ -131,7 +128,10 @@ int main () {
             ofs << CSV_HEADER << endl;
             ofs.close();
         }
-        printSampling(us.sampleWithSize(N));
+
+        for (size_t i = N; i < N * 1000; i *= 10) {
+            printSampling(us.sampleWithSize(i));
+        }
         cout << endl;
 
         cout << "-- Echantillonage preferentiel --" << endl;
@@ -141,7 +141,10 @@ int main () {
             ofs << CSV_HEADER << endl;
             ofs.close();
         }
-        printSampling(is.sampleWithSize(N));
+
+        for (size_t i = N; i < N * 1000; i *= 10) {
+            printSampling(is.sampleWithSize(i));
+        }
         cout << endl;
 
         cout << "-- Echantillonage uniforme avec variable de controle --" << endl;
@@ -151,7 +154,9 @@ int main () {
             ofs << CSV_HEADER << endl;
             ofs.close();
         }
-        printSampling(cv.sampleWithSize(M, N));
+        for (size_t i = N; i < N * 1000; i *= 10) {
+            printSampling(cv.sampleWithSize(M, i));
+        }
         cout << endl << endl;
     }
 

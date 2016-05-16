@@ -22,15 +22,9 @@ public:
     void setSeed(const std::seed_seq& seed);
 
 private:
-    struct Result {
-        double mean;
-        double halfDelta;
-        double stdDev;
-    };
+    void sample(size_t step, size_t& N, double& S, double& Q);
 
-    Result sample(size_t step, size_t &N, double &S, double &Q);
-
-    Sampling createSampling(double mean, double halfDelta, size_t N, double timeElapsed) const;
+    Sampling createSampling(size_t N, double timeElapsed) const;
 };
 
 #endif // UNIFORMS_AMPLING_H

@@ -9,18 +9,23 @@
 
 class MonteCarloMethod {
 public:
-    typedef std::function<double(double)>Func;
+    typedef std::function<double(double)> Func;
 
 protected:
     const Func& g;
 
+    double mean;
+    double stdDev;
+    double halfDelta;
+
 public:
 
     struct Sampling {
-        double areaEstimator;
-        ConfidenceInterval confidenceInterval;
-        size_t N;
-        double elapsedTime;
+        double areaEstimator;                   // aire estimee
+        double stdDevEstimator;                 // estimateur de l'ecart-type de l'aire estimee
+        ConfidenceInterval confidenceInterval;  // intervalle de confiance a 95%
+        size_t N;                               // taille de l'echantillon
+        double elapsedTime;                     // temps pour creer la totalite de l'echantillon
     };
 
     MonteCarloMethod(const Func& g);

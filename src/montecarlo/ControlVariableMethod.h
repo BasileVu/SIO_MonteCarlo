@@ -31,17 +31,12 @@ private:
         double c;
     };
 
-    struct ResultSecond {
-        double meanV;
-        double halfDelta;
-    };
-
     // TODO
     ResultFirst firstStep(size_t M);
 
-    ResultSecond secondStep(size_t step, size_t& N, double c, double& SV, double& QV);
+    void secondStep(size_t step, size_t& N, double c, double& SV, double& QV);
 
-    Sampling createSampling(double meanV, double halfDelta, size_t N, double timeElapsed);
+    Sampling createSampling(size_t N, double timeElapsed);
 };
 
 #endif // CONTROL_VARIABLE_H

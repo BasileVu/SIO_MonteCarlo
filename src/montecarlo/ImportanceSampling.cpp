@@ -11,9 +11,9 @@ MonteCarloMethod::Sampling ImportanceSampling::sampleWithSize(size_t N) {
     double S = 0, Q = 0;
     size_t tmpN = 0;
 
-    Result res = sample(N, tmpN, S, Q);
+    sample(N, tmpN, S, Q);
 
-    return {res.mean, ConfidenceInterval(res.mean, res.halfDelta), N, (double)(clock() - start) / CLOCKS_PER_SEC};
+    return {mean, stdDev, ConfidenceInterval(mean, halfDelta), N, (double)(clock() - start) / CLOCKS_PER_SEC};
 }
 
 MonteCarloMethod::Sampling ImportanceSampling::sampleWithMaxDelta(double maxDelta, size_t step) {
@@ -23,12 +23,11 @@ MonteCarloMethod::Sampling ImportanceSampling::sampleWithMaxDelta(double maxDelt
     size_t N = 0;
 
     // genere des valeurs tant que la largeur de l'intervalle de confiance est plus grande que "maxDelta"
-    Result res;
     do {
-        res = sample(step, N, S, Q);
-    } while (res.halfDelta * 2 > maxDelta);
+        sample(step, N, S, Q);
+    } while (halfDelta * 2 > maxDelta);
 
-    return {res.mean, ConfidenceInterval(res.mean, res.halfDelta), N, (double)(clock() - start) / CLOCKS_PER_SEC};
+    return {mean, stdDev, ConfidenceInterval(mean, halfDelta), N, (double)(clock() - start) / CLOCKS_PER_SEC};
 }
 
 MonteCarloMethod::Sampling ImportanceSampling::sampleWithMinTime(double maxTime, size_t step) {
@@ -38,21 +37,20 @@ MonteCarloMethod::Sampling ImportanceSampling::sampleWithMinTime(double maxTime,
     double curTime = 0;
 
     // genere des valeurs tant que le temps maximal d'execution n'est pas atteint
-    Result res;
     do {
         clock_t beg = clock();
-        res = sample(step, N, S, Q);
+        sample(step, N, S, Q);
         curTime += (double)(clock() - beg) / CLOCKS_PER_SEC;
     } while (curTime < maxTime);
 
-    return {res.mean, ConfidenceInterval(res.mean, res.halfDelta), N, curTime};
+    return {mean, stdDev, ConfidenceInterval(mean, halfDelta), N, curTime};
 }
 
 void ImportanceSampling::setSeed(const std::seed_seq &seed) {
     generator.setSeed(seed);
 }
 
-ImportanceSampling::Result ImportanceSampling::sample(size_t step, size_t& N, double& S, double& Q) {
+void ImportanceSampling::sample(size_t step, size_t& N, double& S, double& Q) {
     const PiecewiseLinearFunction& f = generator.getPWLFunc();
 
     for (size_t i = 0; i < step; ++i) {
@@ -69,12 +67,10 @@ ImportanceSampling::Result ImportanceSampling::sample(size_t step, size_t& N, do
     double tmpS = S * f.A;
     double tmpQ = Q*(f.A * f.A);
 
-    double mean = tmpS/N;
+    mean = tmpS/N;
     double var = tmpQ/N - mean*mean;
-
-    double halfDelta = 1.96 * sqrt(var/N);
-
-    return {mean, halfDelta};
+    stdDev = sqrt(var/N);
+    halfDelta = 1.96 * stdDev;
 }
 
 
