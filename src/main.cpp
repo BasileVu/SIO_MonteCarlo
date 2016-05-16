@@ -21,6 +21,31 @@ const string MAX_WIDTH = "Largeur max IC";
 const string MIN_TIME = "Temps min [s]";
 const string HEADER = "N generations | Aire estimee |         IC         | largeur IC | Temps [s]";
 
+
+
+void printSampling(const MonteCarloMethod::Sampling& s) {
+    cout << setw(13) << s.N << " | ";
+    cout << fixed;
+    cout << setw(12) << setprecision(5) << s.areaEstimator << " | ";
+    cout << setw(18)  << s.confidenceInterval << " | ";
+    cout << setw(10)  << setprecision(5) << s.confidenceInterval.delta << " | ";
+    cout << setw(9) << setprecision(3) << s.elapsedTime;
+    cout.unsetf(ios_base::floatfield);
+    cout << endl;
+
+    if (EXPORT_CSV) {
+        ofstream ofs(CSV_FILE, ios_base::app);
+        ofs << s.N << CSV_SEPARATOR;
+        ofs << s.areaEstimator << CSV_SEPARATOR;
+        ofs << s.confidenceInterval << CSV_SEPARATOR;
+        ofs << s.confidenceInterval.lower << CSV_SEPARATOR;
+        ofs << s.confidenceInterval.upper << CSV_SEPARATOR;
+        ofs << s.confidenceInterval.delta << CSV_SEPARATOR;
+        ofs << s.elapsedTime << endl;
+        ofs.close();
+    }
+}
+
 void printSampling(double constraint, const MonteCarloMethod::Sampling& s) {
     cout << setw(14) << constraint << " | ";
     cout << setw(13) << s.N << " | ";
@@ -56,8 +81,8 @@ int main () {
     // borne inferieure et superieure
     double a = 0, b = 15;
 
-    // nombre de points a utiliser pour la fonction affine par morceaux
-    size_t numPointsPWLFunc = 15;
+    // creation des points de la fonction affine par morceaux
+    Points points = Stats::createPoints(15, g, a, b);
 
     // nombre d'étapes a faire dans le cas de generations avec largeur d'IC ou temps limite
     size_t step = 100000;
@@ -84,6 +109,55 @@ int main () {
         ofs.close();
     }
 
+
+    cout << "-----------------------------------------------------" << endl;
+    cout << "| Test de l'implementation des differentes methodes |" << endl;
+    cout << "-----------------------------------------------------" << endl << endl;
+    {
+        UniformSampling us(g, a, b);
+        ImportanceSampling is(g, points.xs, points.ys);
+        ControlVariable cv(g, a, b, points.xs, points.ys);
+
+        us.setSeed(seed);
+        is.setSeed(seed);
+        cv.setSeed(seed);
+
+        const size_t N = 10000000, M = 10000;
+
+        cout << "-- Echantillonage uniforme --" << endl;
+        cout << HEADER << endl;
+        if (EXPORT_CSV) {
+            ofstream ofs(CSV_FILE, ios_base::app);
+            ofs << CSV_HEADER << endl;
+            ofs.close();
+        }
+        printSampling(us.sampleWithSize(N));
+        cout << endl;
+
+        cout << "-- Echantillonage preferentiel --" << endl;
+        cout << HEADER << endl;
+        if (EXPORT_CSV) {
+            ofstream ofs(CSV_FILE, ios_base::app);
+            ofs << CSV_HEADER << endl;
+            ofs.close();
+        }
+        printSampling(is.sampleWithSize(N));
+        cout << endl;
+
+        cout << "-- Echantillonage uniforme avec variable de controle --" << endl;
+        cout << HEADER << endl;
+        if (EXPORT_CSV) {
+            ofstream ofs(CSV_FILE, ios_base::app);
+            ofs << CSV_HEADER << endl;
+            ofs.close();
+        }
+        printSampling(cv.sampleWithSize(M, N));
+        cout << endl << endl;
+    }
+
+    cout << "---------------------------------------------------------------------" << endl;
+    cout << "| Echantillonages en utillisant differentes methodes et contraintes |" << endl;
+    cout << "---------------------------------------------------------------------" << endl << endl;
 
     {
         UniformSampling us(g, a, b);
@@ -112,9 +186,6 @@ int main () {
         }
         cout << endl;
     }
-
-    // creation des points de la fonction affine par morceaux
-    Points points = Stats::createPoints(numPointsPWLFunc, g, a, b);
 
     {
         ImportanceSampling is(g, points.xs, points.ys);
