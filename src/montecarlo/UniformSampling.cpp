@@ -73,6 +73,7 @@ UniformSampling::Result UniformSampling::sample(size_t step, size_t& N, double& 
 
     double mean = S / N;
     double var = Q / N - mean * mean;
+    double stdDev = (b-a) * sqrt(var / N);
     double halfDelta = 1.96 * (b - a) * sqrt(var / N);
 
     return {mean, halfDelta};

@@ -25,6 +25,7 @@ private:
     struct Result {
         double mean;
         double halfDelta;
+        double stdDev;
     };
 
     Result sample(size_t step, size_t &N, double &S, double &Q);

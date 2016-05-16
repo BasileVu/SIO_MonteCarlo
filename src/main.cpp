@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <list>
+#include <fstream>
 
 #include "montecarlo/UniformSampling.h"
 #include "montecarlo/ImportanceSampling.h"
@@ -11,18 +12,13 @@
 
 using namespace std;
 
-/*
-void printSampling(const MonteCarloMethod::Sampling& s) {
-    cout << " N. de generations : " << s.N << endl;
-    cout << " Aire estimee      : " << s.areaEstimator << endl;
-    cout << " IC                : " << s.confidenceInterval << endl;
-    cout << " Largeur de l'IC   : " << s.confidenceInterval.delta << endl;
-    cout << " Temps d'execution : " << s.elapsedTime << "s" << endl;
-    cout << endl;
-}*/
+#define EXPORT_CSV true
+const string CSV_FILE = "result.csv";
+const char CSV_SEPARATOR = ';';
+const string CSV_HEADER = "N generations;Aire estimee;IC;IC inf;IC sup;largeur IC;Temps [s]";
 
-const string MAX_WIDTH = "Largeur max IC | ";
-const string MIN_TIME = "Temps min [s]  | ";
+const string MAX_WIDTH = "Largeur max IC";
+const string MIN_TIME = "Temps min [s]";
 const string HEADER = "N generations | Aire estimee |         IC         | largeur IC | Temps [s]";
 
 void printSampling(double constraint, const MonteCarloMethod::Sampling& s) {
@@ -35,6 +31,19 @@ void printSampling(double constraint, const MonteCarloMethod::Sampling& s) {
     cout << setw(9) << setprecision(3) << s.elapsedTime;
     cout.unsetf(ios_base::floatfield);
     cout << endl;
+
+    if (EXPORT_CSV) {
+        ofstream ofs(CSV_FILE, ios_base::app);
+        ofs << constraint << CSV_SEPARATOR;
+        ofs << s.N << CSV_SEPARATOR;
+        ofs << s.areaEstimator << CSV_SEPARATOR;
+        ofs << s.confidenceInterval << CSV_SEPARATOR;
+        ofs << s.confidenceInterval.lower << CSV_SEPARATOR;
+        ofs << s.confidenceInterval.upper << CSV_SEPARATOR;
+        ofs << s.confidenceInterval.delta << CSV_SEPARATOR;
+        ofs << s.elapsedTime << endl;
+        ofs.close();
+    }
 }
 
 int main () {
@@ -56,14 +65,23 @@ int main () {
     // graine utilisee pour les generateurs
     seed_seq seed = {24, 512, 42};
 
-    std::list<double> maxWidths;
-    for (double i = 1; i > 0.09; i -= 0.1) {
+    list<double> maxWidths;
+    for (double i = 1; i > 0.4; i -= 0.1) {
         maxWidths.push_back(i);
     }
+    /*for (double i = 0.09; i > 0.04; i -= 0.01) {
+        maxWidths.push_back(i);
+    }*/
 
-    std::list<double> minTimes;
-    for (double i = 1; i < 10; ++i) {
+    list<double> minTimes;
+    for (double i = 1; i < 2; ++i) {
         minTimes.push_back(i);
+    }
+
+    // cree un nouveau fichier / ecrase l'ancien s'il existe
+    if (EXPORT_CSV) {
+        ofstream ofs(CSV_FILE);
+        ofs.close();
     }
 
 
@@ -72,13 +90,23 @@ int main () {
         us.setSeed(seed);
         cout << "-- Echantillonage uniforme --" << endl;
 
-        cout << MAX_WIDTH << HEADER << endl;
+        cout << MAX_WIDTH << " | " << HEADER << endl;
+        if (EXPORT_CSV) {
+            ofstream ofs(CSV_FILE, ios_base::app);
+            ofs << MAX_WIDTH << CSV_SEPARATOR << CSV_HEADER << endl;
+            ofs.close();
+        }
         for (double maxWidth: maxWidths) {
             printSampling(maxWidth, us.sampleWithMaxDelta(maxWidth, step));
         }
         cout << endl;
 
-        cout << MIN_TIME << HEADER << endl;
+        cout << MIN_TIME << "  | " << HEADER << endl;
+        if (EXPORT_CSV) {
+            ofstream ofs(CSV_FILE, ios_base::app);
+            ofs << MIN_TIME << CSV_SEPARATOR << CSV_HEADER << endl;
+            ofs.close();
+        }
         for (double minTime: minTimes) {
             printSampling(minTime, us.sampleWithMinTime(minTime, step));
         }
@@ -94,13 +122,23 @@ int main () {
 
         cout << "-- Echantillonage preferentiel --" << endl;
 
-        cout << MAX_WIDTH << HEADER << endl;
+        cout << MAX_WIDTH << " | " << HEADER << endl;
+        if (EXPORT_CSV) {
+            ofstream ofs(CSV_FILE, ios_base::app);
+            ofs << MAX_WIDTH << CSV_SEPARATOR << CSV_HEADER << endl;
+            ofs.close();
+        }
         for (double maxWidth: maxWidths) {
             printSampling(maxWidth, is.sampleWithMaxDelta(maxWidth, step));
         }
         cout << endl;
 
-        cout << MIN_TIME << HEADER << endl;
+        cout << MIN_TIME << "  | " << HEADER << endl;
+        if (EXPORT_CSV) {
+            ofstream ofs(CSV_FILE, ios_base::app);
+            ofs << MIN_TIME << CSV_SEPARATOR << CSV_HEADER << endl;
+            ofs.close();
+        }
         for (double minTime: minTimes) {
             printSampling(minTime, is.sampleWithMinTime(minTime, step));
         }
@@ -115,13 +153,23 @@ int main () {
         cout << "-- Echantillonage uniforme avec variable de controle --" << endl;
         cout << "Avec M = " << M << " :" << endl;
 
-        cout << MAX_WIDTH << HEADER << endl;
+        cout << MAX_WIDTH << " | " << HEADER << endl;
+        if (EXPORT_CSV) {
+            ofstream ofs(CSV_FILE, ios_base::app);
+            ofs << MAX_WIDTH << CSV_SEPARATOR << CSV_HEADER << endl;
+            ofs.close();
+        }
         for (double maxWidth: maxWidths) {
             printSampling(maxWidth, cv.sampleWithMaxDelta(M, maxWidth, step));
         }
         cout << endl;
 
-        cout << MIN_TIME << HEADER << endl;
+        cout << MIN_TIME << "  | " << HEADER << endl;
+        if (EXPORT_CSV) {
+            ofstream ofs(CSV_FILE, ios_base::app);
+            ofs << MIN_TIME << CSV_SEPARATOR << CSV_HEADER << endl;
+            ofs.close();
+        }
         for (double minTime: minTimes) {
             printSampling(minTime, cv.sampleWithMinTime(M, minTime, step));
         }
