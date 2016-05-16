@@ -10,10 +10,10 @@ std::string ConfidenceInterval::toString() const {
     return ss.str();
 }
 
-ConfidenceInterval::ConfidenceInterval(double center, double halfDelta, size_t precision) {
-    lower = center - halfDelta;
-    upper = center + halfDelta;
-    delta = halfDelta * 2;
+ConfidenceInterval::ConfidenceInterval(double center, double halfWidth, size_t precision) {
+    lower = center - halfWidth;
+    upper = center + halfWidth;
+    width = halfWidth * 2;
     displayPrecision = precision;
 }
 
@@ -58,8 +58,8 @@ double Stats::mean(const std::vector<double>& values) {
 
 ConfidenceInterval Stats::confidenceInterval(const std::vector<double>& values, double quantile) {
     double m = mean(values);
-    double halfDelta = quantile * (sampleStdDev(values) / std::sqrt(values.size()));
-    return ConfidenceInterval (m, halfDelta);
+    double haldWidth = quantile * (sampleStdDev(values) / std::sqrt(values.size()));
+    return ConfidenceInterval (m, haldWidth);
 };
 
 Points Stats::createPoints(size_t numPoints, const std::function<double(double)>& func, double a, double b) {
@@ -69,7 +69,7 @@ Points Stats::createPoints(size_t numPoints, const std::function<double(double)>
     }
 
     if (a > b) {
-        throw std::invalid_argument("Borne minimale plus grande que borne maximale.");
+        throw std::invalid_argument("Borne inferieure plus grande que borne superieure.");
     }
 
     std::vector<double> xs, ys;

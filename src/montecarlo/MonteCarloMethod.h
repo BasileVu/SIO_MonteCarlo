@@ -16,7 +16,7 @@ protected:
 
     double mean;
     double stdDev;
-    double halfDelta;
+    double halfWidth;
 
     double sum;
     double sumSquares;

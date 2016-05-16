@@ -6,7 +6,12 @@
 UniformSampling::UniformSampling(const MonteCarloMethod::Func& g, double a, double b)
         :
         MonteCarloMethod(g), a(a), b(b),
-        distribution(std::uniform_real_distribution<double>(0, 1)) {}
+        distribution(std::uniform_real_distribution<double>(0, 1))
+{
+    if (b <= a) {
+        throw std::invalid_argument("b doit etre plus grand que a");
+    }
+}
 
 MonteCarloMethod::Sampling UniformSampling::sampleWithSize(size_t N) {
     init();
@@ -15,13 +20,12 @@ MonteCarloMethod::Sampling UniformSampling::sampleWithSize(size_t N) {
     return createSampling((double)(clock() - start) / CLOCKS_PER_SEC);
 }
 
-MonteCarloMethod::Sampling UniformSampling::sampleWithMaxDelta(double maxDelta, size_t step) {
+MonteCarloMethod::Sampling UniformSampling::sampleWithMaxWidth(double maxWidth, size_t step) {
     init();
 
-    // genere des valeurs tant que la largeur de l'intervalle de confiance est plus grande que "maxDelta"
     do {
         sample(step);
-    } while (halfDelta * 2 > maxDelta);
+    } while (halfWidth * 2 > maxWidth);
 
     return createSampling((double)(clock() - start) / CLOCKS_PER_SEC);
 }
@@ -30,7 +34,6 @@ MonteCarloMethod::Sampling UniformSampling::sampleWithMinTime(double maxTime, si
     init();
     double curTime = 0;
 
-    // genere des valeurs tant que le temps maximal d'execution n'est pas atteint
     do {
         clock_t beg = clock();
         sample(step);
@@ -59,12 +62,10 @@ void UniformSampling::sample(size_t step) {
     mean = sum / numGen;
     double var = (sumSquares / numGen) - mean * mean;
     stdDev = (b-a) * sqrt(var / numGen);
-    halfDelta = 1.96 * (b - a) * sqrt(var / numGen);
+    halfWidth = 1.96 * (b - a) * sqrt(var / numGen);
 }
 
 MonteCarloMethod::Sampling UniformSampling::createSampling(double timeElapsed) const {
     double areaEstimator = (b-a) * mean;
-
-    // retourne l'estimateur de l'aire ainsi que l'intervalle de confiance associee (et la taille N, par cohérence)
-    return {areaEstimator, stdDev, ConfidenceInterval(areaEstimator, halfDelta), numGen, timeElapsed};
+    return {areaEstimator, stdDev, ConfidenceInterval(areaEstimator, halfWidth), numGen, timeElapsed};
 }

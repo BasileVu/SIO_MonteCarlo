@@ -13,7 +13,7 @@ public:
 
     Sampling sampleWithSize(size_t N);
 
-    Sampling sampleWithMaxDelta(double maxDelta, size_t step);
+    Sampling sampleWithMaxWidth(double maxWidth, size_t step);
 
     Sampling sampleWithMinTime(double maxTime, size_t step);
 

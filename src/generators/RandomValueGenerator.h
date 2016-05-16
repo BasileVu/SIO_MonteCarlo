@@ -18,38 +18,46 @@ protected:
 
 public:
     /**
-     * \brief Initialise la fonction par morceaux ainsi que les parties de la fonction de repartition.
-     * \param xs Les d'absisses des points constituant la fonction affine par morceaux.
-     * \param ys Les ordonnees des points constituant la fonction affine par morceaux.
+     * Initialise la fonction par morceaux ainsi que les parties de la fonction de repartition.
+     *
+     * @param xs Les abcsisses des points constituant la fonction affine par morceaux.
+     * @param ys Les ordonnees des points constituant la fonction affine par morceaux.
      */
     RandomValueGenerator(const std::vector<double>& xs, const std::vector<double>& ys);
 
     /**
-     * \brief Initialise la graine du generateur.
-     * \param seed La graine a utiliser.
+     * Initialise la graine du generateur.
+     *
+     * @param seed La graine a utiliser.
      */
     void setSeed(std::seed_seq seed);
 
     /**
-     * \brief Genere une realisation d'une variable aleatoire associee a la fonction par morceaux.
+     * Genere une realisation d'une variable aleatoire associee a la fonction par morceaux.
+     *
+     * @return la variable aleatoire.
      */
     virtual double generate() = 0;
 
-    //TODO doc
+    /**
+     * Retourne la fonction affine par morceaux utilisee pour le generateur.
+     */
     const PiecewiseLinearFunction& getPWLFunc() const;
 
 protected:
     /**
-     * \brief Permet de trouver dans quelle intervalle k on tombe en fonction de la probablilité p_k de la tranche liée à
-     *        cette intervalle.
+     * Permet de trouver dans quelle intervalle k on tombe en fonction de la probablilité p_k de la tranche liee a
+     * cette intervalle.
+     *
+     * @return l'indice de la tranche.
      */
     size_t generateK();
 };
 
 
 /**
- * Utilise une approche "bete et mechante" de la methode d'acceptation-rejet afin de generer des realisation de
- * variables aleatoires.
+ *  Utilise une approche "bete et mechante" de la methode d'acceptation-rejet afin de generer des realisation de
+ *  variables aleatoires.
  */
 class HitOrMiss : public RandomValueGenerator {
 private:
@@ -59,14 +67,15 @@ private:
 public:
 
     /**
-     * \brief Initialise les valeurs propres a cet algorithme.
-     * \param xs Les d'absisses des points constituant la fonction affine par morceaux.
-     * \param ys Les ordonnees des points constituant la fonction affine par morceaux.
+     * Initialise les valeurs propres a cet algorithme.
+     *
+     * @param xs Les d'absisses des points constituant la fonction affine par morceaux.
+     * @param ys Les ordonnees des points constituant la fonction affine par morceaux.
      */
     HitOrMiss(const std::vector<double>& xs, const std::vector<double>& ys);
 
     /**
-     * \brief Genere une realisation d'une variable aleatoire associee a la fonction par morceaux.
+     *  Genere une realisation d'une variable aleatoire associee a la fonction par morceaux.
      */
     double generate();
 };
@@ -79,14 +88,17 @@ public:
 class Geometric : public RandomValueGenerator {
 public:
     /**
-     * \brief Initialise les valeurs propres a cet algorithme.
-     * \param xs Les d'absisses des points constituant la fonction affine par morceaux.
-     * \param ys Les ordonnees des points constituant la fonction affine par morceaux.
+     * Initialise les valeurs propres a cet algorithme.
+     *
+     * @param xs Les d'absisses des points constituant la fonction affine par morceaux.
+     * @param ys Les ordonnees des points constituant la fonction affine par morceaux.
      */
     Geometric(const std::vector<double>& xs, const std::vector<double>& ys);
 
     /**
-     * \brief Genere une realisation d'une variable aleatoire associee a la fonction par morceaux.
+     * Genere une realisation d'une variable aleatoire associee a la fonction par morceaux.
+     *
+     * @return La variable aleatoire generee.
      */
     double generate();
 };
@@ -99,14 +111,17 @@ public:
 class InverseFunctions : public RandomValueGenerator {
 public:
     /**
-     * \brief Initialise les valeurs propres a cet algorithme.
-     * \param xs Les d'abscisses des points constituant la fonction affine par morceaux.
-     * \param ys Les ordonnees des points constituant la fonction affine par morceaux.
+     * Initialise les valeurs propres a cet algorithme.
+     *
+     * @param xs Les d'abscisses des points constituant la fonction affine par morceaux.
+     * @param ys Les ordonnees des points constituant la fonction affine par morceaux.
      */
     InverseFunctions(const std::vector<double>& xs, const std::vector<double>& ys);
 
     /**
-     * \brief Genere une realisation d'une variable aleatoire associee a la fonction par morceaux.
+     * Genere une realisation d'une variable aleatoire associee a la fonction affine par morceaux.
+     *
+     * @return La variable aleatoire generee.
      */
     double generate();
 };

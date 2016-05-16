@@ -6,57 +6,56 @@ ControlVariable::ControlVariable(const Func& g, double a, double b,
                                  const std::vector<double>& xs, const std::vector<double>& ys)
         :
         MonteCarloMethod(g), a(a), b(b),
-        distribution(std::uniform_real_distribution<double>(0, 1)),
+        uniformDistr(std::uniform_real_distribution<double>(0, 1)),
         h(xs, ys)
 
 {
-    // TODO preconditions
+    if (a >= b) {
+        throw std::invalid_argument("Borne inferieure plus grande ou egale a la borne superieure.");
+    }
     mu = h.A / (b-a);
 }
 
 MonteCarloMethod::Sampling ControlVariable::sampleWithSize(size_t M, size_t N) {
 
-    clock_t start = clock();
-
-    // phase 1: on genere un "petit" echantillon de taille M
-    firstStep(M);
+    // phase 1 : calcul de la constante 'c'
+    computeConstant(M);
 
     size_t step = N - M;
     numGen = M;
 
     // phase 2 : on poursuit l'echantillonage jusqu'a la taille de N desiree
-    // nombre d'echantillons a generer
-    secondStep(step);
+    sample(step);
     return createSampling((double)(clock() - start) / CLOCKS_PER_SEC);
 }
 
-MonteCarloMethod::Sampling ControlVariable::sampleWithMaxDelta(size_t M, double maxDelta, size_t step) {
+MonteCarloMethod::Sampling ControlVariable::sampleWithMaxWidth(size_t M, double maxWidth, size_t step) {
 
-    // phase 1: on genere un "petit" echantillon de taille M
-    firstStep(M);
+    // phase 1 : calcul de la constante 'c'
+    computeConstant(M);
 
     numGen = M;
 
     // phase 2 : on poursuit l'echantillonage jusqu'a la largeur de l'IC desiree
     do {
-        secondStep(step);
-    } while (halfDelta * 2 > maxDelta);
+        sample(step);
+    } while (halfWidth * 2 > maxWidth);
 
     return createSampling((double)(clock() - start) / CLOCKS_PER_SEC);
 }
 
 MonteCarloMethod::Sampling ControlVariable::sampleWithMinTime(size_t M, double maxTime, size_t step) {
 
-    // phase 1: on genere un "petit" echantillon de taille M
-    firstStep(M);
+    // phase 1 : calcul de la constante 'c'
+    computeConstant(M);
 
     numGen = M;
     double curTime = 0;
 
-    // phase 2 : on poursuit l'echantillonage jusqu'a atteindre le temps maximal desire
+    // phase 2 : on poursuit l'echantillonage jusqu'a atteindre le temps minimal desire
     do {
         clock_t beg = clock();
-        secondStep(step);
+        sample(step);
         curTime += (double)(clock() - beg) / CLOCKS_PER_SEC;
     } while (curTime < maxTime);
 
@@ -65,19 +64,18 @@ MonteCarloMethod::Sampling ControlVariable::sampleWithMinTime(size_t M, double m
 
 void ControlVariable::setSeed(const std::seed_seq &seed) {
     std::seed_seq copy = seed;
-    generator.seed(copy);
+    mtGenerator.seed(copy);
 }
 
-void ControlVariable::firstStep(size_t M) {
+void ControlVariable::computeConstant(size_t M) {
 
     init();
 
-    // phase 1: on genere un "petit" echantillon de taille M
     std::vector<double> yks, zks;
     yks.reserve(M), zks.reserve(M);
 
     for (size_t i = 0; i < M; ++i) {
-        double X = distribution(generator) * (b-a) + a;
+        double X = uniformDistr(mtGenerator) * (b-a) + a;
         yks.push_back(g(X));
         zks.push_back(h(X));
     }
@@ -108,10 +106,10 @@ void ControlVariable::firstStep(size_t M) {
     }
 }
 
-void ControlVariable::secondStep(size_t step) {
+void ControlVariable::sample(size_t step) {
 
     for (size_t i = 0; i < step; ++i) {
-        double X = distribution(generator) * (b - a) + a;
+        double X = uniformDistr(mtGenerator) * (b - a) + a;
         double Y = g(X), Z = h(X);
         double V = Y + c * (Z - mu);
         sum += V;
@@ -121,14 +119,14 @@ void ControlVariable::secondStep(size_t step) {
     numGen += step;
 
     mean = sum / numGen;
-    double varV = (sumSquares / numGen) - mean * mean;
-    stdDev = (b-a) * sqrt(varV / numGen);
-    halfDelta = 1.96 * stdDev;
+    double var = (sumSquares / numGen) - mean * mean;
+    stdDev = (b-a) * sqrt(var / numGen);
+    halfWidth = 1.96 * stdDev;
 }
 
 MonteCarloMethod::Sampling ControlVariable::createSampling(double timeElapsed) const {
     double areaEstimator = (b-a) * mean;
-    return {areaEstimator, stdDev, ConfidenceInterval(areaEstimator, halfDelta), numGen, timeElapsed};
+    return {areaEstimator, stdDev, ConfidenceInterval(areaEstimator, halfWidth), numGen, timeElapsed};
 }
 
 

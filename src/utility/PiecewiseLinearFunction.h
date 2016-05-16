@@ -9,7 +9,7 @@
  */
 struct Piece {
 
-    // fonction linéaire prenant un double et renvoyant un double
+    // fonction lineaire prenant un double et renvoyant un double
     typedef std::function<double(double)> LinearFunc;
 
     double x0, x1;    // bornes de l'intervalle definissant le morceau
@@ -25,12 +25,20 @@ struct PiecewiseLinearFunction {
     PiecewiseLinearFunction(const std::vector<double>& xs, const std::vector<double>& ys);
 
     /**
-     * \brief Recherche dichotomique afin de trouver dans quelle intervalle x se trouve.
-     * \param x l'abscisse dont on veut connaître l'intervalle.
-     * \return l'indice du morceau dans lequel x se trouve.
+     * Recherche dichotomique afin de trouver dans quelle intervalle x se trouve.
+     *
+     * @param x l'abscisse dont on veut connaître l'intervalle.
+     * @return l'indice du morceau dans lequel x se trouve.
      */
     size_t findPiece(double x) const;
 
+    /**
+     * Simplifie l'ecriture de l'application de la fonction affine par morceau sur une valeur donnee.
+     * Effectue un appel a findPiece en interne.
+     *
+     * @param x L'abscisse dont on veut connaitre l'ordonnee.
+     * @return l'ordonnee.
+     */
     double operator()(double x) const;
 };
 

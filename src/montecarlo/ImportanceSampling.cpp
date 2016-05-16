@@ -8,18 +8,18 @@ ImportanceSampling::ImportanceSampling(const std::function<double(double)>& g, c
 MonteCarloMethod::Sampling ImportanceSampling::sampleWithSize(size_t N) {
     init();
     sample(N);
-    return {mean, stdDev, ConfidenceInterval(mean, halfDelta), N, (double)(clock() - start) / CLOCKS_PER_SEC};
+    return {mean, stdDev, ConfidenceInterval(mean, halfWidth), N, (double)(clock() - start) / CLOCKS_PER_SEC};
 }
 
-MonteCarloMethod::Sampling ImportanceSampling::sampleWithMaxDelta(double maxDelta, size_t step) {
+MonteCarloMethod::Sampling ImportanceSampling::sampleWithMaxWidth(double maxWidth, size_t step) {
     init();
 
-    // genere des valeurs tant que la largeur de l'intervalle de confiance est plus grande que "maxDelta"
+    // genere des valeurs tant que la largeur de l'intervalle de confiance est plus grande que "maxWidth"
     do {
         sample(step);
-    } while (halfDelta * 2 > maxDelta);
+    } while (halfWidth * 2 > maxWidth);
 
-    return {mean, stdDev, ConfidenceInterval(mean, halfDelta), numGen, (double)(clock() - start) / CLOCKS_PER_SEC};
+    return {mean, stdDev, ConfidenceInterval(mean, halfWidth), numGen, (double)(clock() - start) / CLOCKS_PER_SEC};
 }
 
 MonteCarloMethod::Sampling ImportanceSampling::sampleWithMinTime(double maxTime, size_t step) {
@@ -34,7 +34,7 @@ MonteCarloMethod::Sampling ImportanceSampling::sampleWithMinTime(double maxTime,
         curTime += (double)(clock() - beg) / CLOCKS_PER_SEC;
     } while (curTime < maxTime);
 
-    return {mean, stdDev, ConfidenceInterval(mean, halfDelta), numGen, curTime};
+    return {mean, stdDev, ConfidenceInterval(mean, halfWidth), numGen, curTime};
 }
 
 void ImportanceSampling::setSeed(const std::seed_seq &seed) {
@@ -61,7 +61,7 @@ void ImportanceSampling::sample(size_t step) {
     mean = tmpS/numGen;
     double var = tmpQ/numGen - mean*mean;
     stdDev = sqrt(var/numGen);
-    halfDelta = 1.96 * stdDev;
+    halfWidth = 1.96 * stdDev;
 }
 
 

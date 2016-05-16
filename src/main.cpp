@@ -27,7 +27,7 @@ void exportSampling(ofstream& ofs, const MonteCarloMethod::Sampling& s) {
     ofs << s.areaEstimator << CSV_SEPARATOR;
     ofs << s.confidenceInterval << CSV_SEPARATOR;
     ofs << (sqrt(s.N) * s.stdDevEstimator) << CSV_SEPARATOR;
-    ofs << s.confidenceInterval.delta << CSV_SEPARATOR;
+    ofs << s.confidenceInterval.width << CSV_SEPARATOR;
     ofs << s.elapsedTime << CSV_SEPARATOR;
     ofs << s.confidenceInterval.lower << CSV_SEPARATOR;
     ofs << s.confidenceInterval.upper << CSV_SEPARATOR;
@@ -40,7 +40,7 @@ void printSampling(const MonteCarloMethod::Sampling& s) {
     cout << setw(12) << setprecision(5) << s.areaEstimator << " | ";
     cout << setw(18)  << s.confidenceInterval << " | ";
     cout << setw(10)  << (sqrt(s.N) * s.stdDevEstimator) << " | ";
-    cout << setw(10)  << setprecision(5) << s.confidenceInterval.delta << " | ";
+    cout << setw(10)  << setprecision(5) << s.confidenceInterval.width << " | ";
     cout << setw(9) << setprecision(3) << s.elapsedTime;
     cout.unsetf(ios_base::floatfield);
     cout << endl;
@@ -81,12 +81,13 @@ int main () {
     // creation des points de la fonction affine par morceaux
     Points points = Stats::createPoints(15, g, a, b);
 
-    // nombre d'étapes a faire dans le cas de generations avec largeur d'IC ou temps limite
+    // nombre d'etapes a faire dans le cas de generations avec une largeur d'IC ou un temps limite
     size_t step = 100000;
 
     // graine utilisee pour les generateurs
     seed_seq seed = {24, 512, 42};
 
+    // creation des largeurs max
     list<double> maxWidths;
     for (double i = 1; i > 0.09; i -= 0.1) {
         maxWidths.push_back(i);
@@ -95,13 +96,14 @@ int main () {
         maxWidths.push_back(i);
     }
 
+    // creation des temps min
     list<double> minTimes;
     for (double i = 1; i < 30; ++i) {
         minTimes.push_back(i);
     }
 
-    // cree un nouveau fichier / ecrase l'ancien s'il existe
     if (EXPORT_CSV) {
+        // cree un nouveau fichier / ecrase l'ancien s'il existe
         ofstream ofs(CSV_FILE);
         ofs.close();
     }
@@ -176,7 +178,7 @@ int main () {
             ofs.close();
         }
         for (double maxWidth: maxWidths) {
-            printExportSampling(maxWidth, us.sampleWithMaxDelta(maxWidth, step));
+            printExportSampling(maxWidth, us.sampleWithMaxWidth(maxWidth, step));
         }
         cout << endl;
 
@@ -205,7 +207,7 @@ int main () {
             ofs.close();
         }
         for (double maxWidth: maxWidths) {
-            printExportSampling(maxWidth, is.sampleWithMaxDelta(maxWidth, step));
+            printExportSampling(maxWidth, is.sampleWithMaxWidth(maxWidth, step));
         }
         cout << endl;
 
@@ -236,7 +238,7 @@ int main () {
             ofs.close();
         }
         for (double maxWidth: maxWidths) {
-            printExportSampling(maxWidth, cv.sampleWithMaxDelta(M, maxWidth, step));
+            printExportSampling(maxWidth, cv.sampleWithMaxWidth(M, maxWidth, step));
         }
         cout << endl;
 
