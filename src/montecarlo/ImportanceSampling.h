@@ -20,12 +20,7 @@ public:
     void setSeed(const std::seed_seq& seed);
 
 private:
-    struct Result {
-        double mean;
-        double halfDelta;
-    };
-
-    void sample(size_t step, size_t& N, double& S, double& Q);
+    void sample(size_t step);
 };
 
 #endif // IMPORTANCE_SAMPLING_H

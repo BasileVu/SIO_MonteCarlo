@@ -18,8 +18,13 @@ protected:
     double stdDev;
     double halfDelta;
 
-public:
+    double sum;
+    double sumSquares;
+    size_t numGen;
 
+    clock_t start;
+
+public:
     struct Sampling {
         double areaEstimator;                   // aire estimee
         double stdDevEstimator;                 // estimateur de l'ecart-type de l'aire estimee
@@ -30,6 +35,9 @@ public:
 
     MonteCarloMethod(const Func& g);
     virtual void setSeed(const std::seed_seq& seed) = 0;
+
+protected:
+    void init();
 };
 
 #endif // MONTECARLOMETHOD_H

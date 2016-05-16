@@ -15,21 +15,23 @@ using namespace std;
 #define EXPORT_CSV true
 const string CSV_FILE = "result.csv";
 const char CSV_SEPARATOR = ';';
-const string CSV_HEADER = "N generations;Aire estimee;IC;IC inf;IC sup;largeur IC;Temps [s]";
+const string CSV_HEADER = "N generations;Aire estimee;IC;RC(N) * ET;largeur IC;Temps [s];IC inf;IC sup";
 
 const string MAX_WIDTH = "Largeur max IC";
 const string MIN_TIME = "Temps min [s]";
-const string HEADER = "N generations | Aire estimee |         IC         | largeur IC | Temps [s]";
+const string HEADER = "N generations | Aire estimee |      IC a 95%      | RC(N) * ET | largeur IC | Temps [s]";
 
 
 void exportSampling(ofstream& ofs, const MonteCarloMethod::Sampling& s) {
     ofs << s.N << CSV_SEPARATOR;
     ofs << s.areaEstimator << CSV_SEPARATOR;
     ofs << s.confidenceInterval << CSV_SEPARATOR;
+    ofs << (sqrt(s.N) * s.stdDevEstimator) << CSV_SEPARATOR;
+    ofs << s.confidenceInterval.delta << CSV_SEPARATOR;
+    ofs << s.elapsedTime << CSV_SEPARATOR;
     ofs << s.confidenceInterval.lower << CSV_SEPARATOR;
     ofs << s.confidenceInterval.upper << CSV_SEPARATOR;
-    ofs << s.confidenceInterval.delta << CSV_SEPARATOR;
-    ofs << s.elapsedTime << endl;
+    ofs << endl;
 }
 
 void printSampling(const MonteCarloMethod::Sampling& s) {
@@ -37,10 +39,15 @@ void printSampling(const MonteCarloMethod::Sampling& s) {
     cout << fixed;
     cout << setw(12) << setprecision(5) << s.areaEstimator << " | ";
     cout << setw(18)  << s.confidenceInterval << " | ";
+    cout << setw(10)  << (sqrt(s.N) * s.stdDevEstimator) << " | ";
     cout << setw(10)  << setprecision(5) << s.confidenceInterval.delta << " | ";
     cout << setw(9) << setprecision(3) << s.elapsedTime;
     cout.unsetf(ios_base::floatfield);
     cout << endl;
+}
+
+void printExportSampling(const MonteCarloMethod::Sampling& s) {
+    printSampling(s);
 
     if (EXPORT_CSV) {
         ofstream ofs(CSV_FILE, ios_base::app);
@@ -49,16 +56,9 @@ void printSampling(const MonteCarloMethod::Sampling& s) {
     }
 }
 
-void printSampling(double constraint, const MonteCarloMethod::Sampling& s) {
+void printExportSampling(double constraint, const MonteCarloMethod::Sampling& s) {
     cout << setw(14) << constraint << " | ";
-    cout << setw(13) << s.N << " | ";
-    cout << fixed;
-    cout << setw(12) << setprecision(5) << s.areaEstimator << " | ";
-    cout << setw(18)  << s.confidenceInterval << " | ";
-    cout << setw(10)  << setprecision(5) << s.confidenceInterval.delta << " | ";
-    cout << setw(9) << setprecision(3) << s.elapsedTime;
-    cout.unsetf(ios_base::floatfield);
-    cout << endl;
+    printSampling(s);
 
     if (EXPORT_CSV) {
         ofstream ofs(CSV_FILE, ios_base::app);
@@ -130,7 +130,7 @@ int main () {
         }
 
         for (size_t i = N; i < N * 1000; i *= 10) {
-            printSampling(us.sampleWithSize(i));
+            printExportSampling(us.sampleWithSize(i));
         }
         cout << endl;
 
@@ -143,7 +143,7 @@ int main () {
         }
 
         for (size_t i = N; i < N * 1000; i *= 10) {
-            printSampling(is.sampleWithSize(i));
+            printExportSampling(is.sampleWithSize(i));
         }
         cout << endl;
 
@@ -155,7 +155,7 @@ int main () {
             ofs.close();
         }
         for (size_t i = N; i < N * 1000; i *= 10) {
-            printSampling(cv.sampleWithSize(M, i));
+            printExportSampling(cv.sampleWithSize(M, i));
         }
         cout << endl << endl;
     }
@@ -176,7 +176,7 @@ int main () {
             ofs.close();
         }
         for (double maxWidth: maxWidths) {
-            printSampling(maxWidth, us.sampleWithMaxDelta(maxWidth, step));
+            printExportSampling(maxWidth, us.sampleWithMaxDelta(maxWidth, step));
         }
         cout << endl;
 
@@ -187,7 +187,7 @@ int main () {
             ofs.close();
         }
         for (double minTime: minTimes) {
-            printSampling(minTime, us.sampleWithMinTime(minTime, step));
+            printExportSampling(minTime, us.sampleWithMinTime(minTime, step));
         }
         cout << endl;
     }
@@ -205,7 +205,7 @@ int main () {
             ofs.close();
         }
         for (double maxWidth: maxWidths) {
-            printSampling(maxWidth, is.sampleWithMaxDelta(maxWidth, step));
+            printExportSampling(maxWidth, is.sampleWithMaxDelta(maxWidth, step));
         }
         cout << endl;
 
@@ -216,7 +216,7 @@ int main () {
             ofs.close();
         }
         for (double minTime: minTimes) {
-            printSampling(minTime, is.sampleWithMinTime(minTime, step));
+            printExportSampling(minTime, is.sampleWithMinTime(minTime, step));
         }
         cout << endl;
     }
@@ -236,7 +236,7 @@ int main () {
             ofs.close();
         }
         for (double maxWidth: maxWidths) {
-            printSampling(maxWidth, cv.sampleWithMaxDelta(M, maxWidth, step));
+            printExportSampling(maxWidth, cv.sampleWithMaxDelta(M, maxWidth, step));
         }
         cout << endl;
 
@@ -247,7 +247,7 @@ int main () {
             ofs.close();
         }
         for (double minTime: minTimes) {
-            printSampling(minTime, cv.sampleWithMinTime(M, minTime, step));
+            printExportSampling(minTime, cv.sampleWithMinTime(M, minTime, step));
         }
         cout << endl;
     }

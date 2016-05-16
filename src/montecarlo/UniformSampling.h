@@ -22,9 +22,9 @@ public:
     void setSeed(const std::seed_seq& seed);
 
 private:
-    void sample(size_t step, size_t& N, double& S, double& Q);
+    void sample(size_t step);
 
-    Sampling createSampling(size_t N, double timeElapsed) const;
+    Sampling createSampling(double timeElapsed) const;
 };
 
 #endif // UNIFORMS_AMPLING_H

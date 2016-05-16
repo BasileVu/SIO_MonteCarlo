@@ -9,46 +9,35 @@ UniformSampling::UniformSampling(const MonteCarloMethod::Func& g, double a, doub
         distribution(std::uniform_real_distribution<double>(0, 1)) {}
 
 MonteCarloMethod::Sampling UniformSampling::sampleWithSize(size_t N) {
+    init();
 
-    clock_t start = clock();
-
-    // genere N valeurs et retourne dans res la moyenne et la demi-largeur de l'IC
-    double S = 0, Q = 0;
-    size_t tmpN = 0; // sauvegarde de N
-
-    sample(N, tmpN, S, Q);
-    return createSampling(N, (double)(clock() - start) / CLOCKS_PER_SEC);
+    sample(N);
+    return createSampling((double)(clock() - start) / CLOCKS_PER_SEC);
 }
 
 MonteCarloMethod::Sampling UniformSampling::sampleWithMaxDelta(double maxDelta, size_t step) {
-
-    clock_t start = clock();
-
-    double S = 0, Q = 0;
-    size_t N = 0;
+    init();
 
     // genere des valeurs tant que la largeur de l'intervalle de confiance est plus grande que "maxDelta"
     do {
-        sample(step, N, S, Q);
+        sample(step);
     } while (halfDelta * 2 > maxDelta);
 
-    return createSampling(N, (double)(clock() - start) / CLOCKS_PER_SEC);
+    return createSampling((double)(clock() - start) / CLOCKS_PER_SEC);
 }
 
 MonteCarloMethod::Sampling UniformSampling::sampleWithMinTime(double maxTime, size_t step) {
-
-    double S = 0, Q = 0;
-    size_t N = 0;
+    init();
     double curTime = 0;
 
     // genere des valeurs tant que le temps maximal d'execution n'est pas atteint
     do {
         clock_t beg = clock();
-        sample(step, N, S, Q);
+        sample(step);
         curTime += (double)(clock() - beg) / CLOCKS_PER_SEC;
     } while (curTime < maxTime);
 
-    return createSampling(N, curTime);
+    return createSampling(curTime);
 }
 
 void UniformSampling::setSeed(const std::seed_seq &seed) {
@@ -56,28 +45,26 @@ void UniformSampling::setSeed(const std::seed_seq &seed) {
     generator.seed(copy);
 }
 
-
-void UniformSampling::sample(size_t step, size_t& N, double& S, double& Q) {
-
+void UniformSampling::sample(size_t step) {
     for (size_t i = 0; i < step; ++i) {
         double X = distribution(generator) * (b - a) + a;
         double Y = g(X);
 
-        S += Y;
-        Q += Y * Y;
+        sum += Y;
+        sumSquares += Y * Y;
     }
 
-    N += step;
+    numGen += step;
 
-    mean = S / N;
-    double var = Q / N - mean * mean;
-    stdDev = (b-a) * sqrt(var / N);
-    halfDelta = 1.96 * (b - a) * sqrt(var / N);
+    mean = sum / numGen;
+    double var = (sumSquares / numGen) - mean * mean;
+    stdDev = (b-a) * sqrt(var / numGen);
+    halfDelta = 1.96 * (b - a) * sqrt(var / numGen);
 }
 
-MonteCarloMethod::Sampling UniformSampling::createSampling(size_t N, double timeElapsed) const {
+MonteCarloMethod::Sampling UniformSampling::createSampling(double timeElapsed) const {
     double areaEstimator = (b-a) * mean;
 
     // retourne l'estimateur de l'aire ainsi que l'intervalle de confiance associee (et la taille N, par cohérence)
-    return {areaEstimator, stdDev, ConfidenceInterval(areaEstimator, halfDelta), N, timeElapsed};
+    return {areaEstimator, stdDev, ConfidenceInterval(areaEstimator, halfDelta), numGen, timeElapsed};
 }
