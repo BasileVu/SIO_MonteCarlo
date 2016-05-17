@@ -18,7 +18,7 @@ private:
     double mu;   // esperance de la fonction par morceaux
 
     double c;     // coefficient c tq V = Y + c(Z - mu), avec Y = g(X) et Z(X) la variable de controle
-    size_t M = 0; // taille de l'echantillon pour determiner 'c'
+    uint64_t M = 0; // taille de l'echantillon pour determiner 'c'
 
 public:
     /**
@@ -35,7 +35,7 @@ public:
     /**
      * Fixe la valeur de
      */
-    void setSamplingSize(size_t M);
+    void setSamplingSize(uint64_t M);
 
 
     /**
@@ -43,19 +43,19 @@ public:
      *
      * Utilisable uniquement apres que 'setSamplingSize' ait ete appelee au moins une fois apres la creation de l'objet.
      */
-    Sampling sampleWithSize(size_t N);
+    Sampling sampleWithSize(uint64_t N);
     /**
      * @see MontecarloMethod::sampleWithMaxWidth.
      *
      * Utilisable uniquement apres que 'setSamplingSize' ait ete appelee au moins une fois apres la creation de l'objet.
      */
-    Sampling sampleWithMaxWidth(double maxWidth, size_t step);
+    Sampling sampleWithMaxWidth(double maxWidth, uint64_t step);
     /**
      * @see MontecarloMethod::sampleWithMinTime.
      *
      * Utilisable uniquement apres que 'setSamplingSize' ait ete appelee au moins une fois apres la creation de l'objet.
      */
-    Sampling sampleWithMinTime(double maxTime, size_t step);
+    Sampling sampleWithMinTime(double maxTime, uint64_t step);
 
     /**
      * @see MonteCarloMethod::setSeed.
@@ -76,7 +76,7 @@ private:
      *
      * @param step Le nombre de generation qui seront effectuees.
      */
-    void sample(size_t step);
+    void sample(uint64_t step);
 
     /**
      * Empaquete toutes les valeurs associees a l'echantillon (aire estimee, IC, etc: voir MonteCarloMethod::Sampling).

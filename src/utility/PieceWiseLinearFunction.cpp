@@ -3,7 +3,7 @@
 PiecewiseLinearFunction::PiecewiseLinearFunction(const std::vector<double>& xs, const std::vector<double>& ys) {
 
     pieces.reserve(xs.size());
-    for (size_t i = 0; i < xs.size(); ++i) {
+    for (uint64_t i = 0; i < xs.size(); ++i) {
 
         // creation d'un morceau de la fonction
         if (i < xs.size() - 1) {
@@ -27,9 +27,9 @@ PiecewiseLinearFunction::PiecewiseLinearFunction(const std::vector<double>& xs, 
     }
 }
 
-size_t PiecewiseLinearFunction::findPiece(double x) const {
+uint64_t PiecewiseLinearFunction::findPiece(double x) const {
 
-    size_t first = 0, last = pieces.size() - 1; // indices des tranches à prendre en compte
+    uint64_t first = 0, last = pieces.size() - 1; // indices des tranches à prendre en compte
 
     while (true) {
 
@@ -39,7 +39,7 @@ size_t PiecewiseLinearFunction::findPiece(double x) const {
         }
 
         // on regarde si x est dans la première ou deuxième moitié de l'intervalle de recherche
-        size_t mid = (last-first)/2 + first;
+        uint64_t mid = (last-first)/2 + first;
         if (x < pieces[mid].x1) {   // première moitié
             last = mid;
         } else {                    // deuxième moitié

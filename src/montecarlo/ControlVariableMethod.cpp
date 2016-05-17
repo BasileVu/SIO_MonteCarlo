@@ -2,6 +2,7 @@
 
 #include "ControlVariableMethod.h"
 
+
 ControlVariable::ControlVariable(const Func& g, double a, double b,
                                  const std::vector<double>& xs, const std::vector<double>& ys)
         :
@@ -16,16 +17,20 @@ ControlVariable::ControlVariable(const Func& g, double a, double b,
     mu = h.A / (b-a);
 }
 
-void ControlVariable::setSamplingSize(size_t M) {
+void ControlVariable::setSamplingSize(uint64_t M) {
     this->M = M;
 }
 
-MonteCarloMethod::Sampling ControlVariable::sampleWithSize(size_t N) {
+MonteCarloMethod::Sampling ControlVariable::sampleWithSize(uint64_t N) {
 
     // phase 1 : calcul de la constante 'c'
     computeConstant();
 
-    size_t step = N - M;
+    if (N < M) {
+        throw std::invalid_argument("N est plus petit que M");
+    }
+
+    uint64_t step = N - M;
     numGen = M;
 
     // phase 2 : on poursuit l'echantillonage jusqu'a la taille de N desiree
@@ -33,7 +38,7 @@ MonteCarloMethod::Sampling ControlVariable::sampleWithSize(size_t N) {
     return createSampling((double)(clock() - start) / CLOCKS_PER_SEC);
 }
 
-MonteCarloMethod::Sampling ControlVariable::sampleWithMaxWidth(double maxWidth, size_t step) {
+MonteCarloMethod::Sampling ControlVariable::sampleWithMaxWidth(double maxWidth, uint64_t step) {
 
     // phase 1 : calcul de la constante 'c'
     computeConstant();
@@ -48,7 +53,7 @@ MonteCarloMethod::Sampling ControlVariable::sampleWithMaxWidth(double maxWidth, 
     return createSampling((double)(clock() - start) / CLOCKS_PER_SEC);
 }
 
-MonteCarloMethod::Sampling ControlVariable::sampleWithMinTime(double minTime, size_t step) {
+MonteCarloMethod::Sampling ControlVariable::sampleWithMinTime(double minTime, uint64_t step) {
 
     // phase 1 : calcul de la constante 'c'
     computeConstant();
@@ -78,14 +83,14 @@ void ControlVariable::computeConstant() {
     std::vector<double> yks, zks;
     yks.reserve(M), zks.reserve(M);
 
-    for (size_t i = 0; i < M; ++i) {
+    for (uint64_t i = 0; i < M; ++i) {
         double X = uniformDistr(mtGenerator) * (b-a) + a; // X ~ U(a,b)
         yks.push_back(g(X));
         zks.push_back(h(X));
     }
 
     double varZ = 0, meanY = 0;
-    for (size_t i = 0; i < M; ++i) {
+    for (uint64_t i = 0; i < M; ++i) {
         double tmp = zks[i] - mu;
         varZ += tmp * tmp;
         meanY += yks[i];
@@ -95,7 +100,7 @@ void ControlVariable::computeConstant() {
     meanY /= M;
 
     double covYZ = 0;
-    for (size_t i = 0; i < M; ++i) {
+    for (uint64_t i = 0; i < M; ++i) {
         covYZ += (yks[i] - meanY) * (zks[i] - mu);
     }
 
@@ -103,16 +108,16 @@ void ControlVariable::computeConstant() {
 
     c = -(covYZ / varZ);
 
-    for (size_t i = 0; i < M; ++i) {
+    for (uint64_t i = 0; i < M; ++i) {
         double V = yks[i] + c * (zks[i] - mu);
         sum += V;
         sumSquares += V * V;
     }
 }
 
-void ControlVariable::sample(size_t step) {
+void ControlVariable::sample(uint64_t step) {
 
-    for (size_t i = 0; i < step; ++i) {
+    for (uint64_t i = 0; i < step; ++i) {
         double X = uniformDistr(mtGenerator) * (b - a) + a; // X ~ U(a,b)
         double Y = g(X), Z = h(X);
         double V = Y + c * (Z - mu);

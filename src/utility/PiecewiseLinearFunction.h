@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <functional>
+#include <cstdint>
 
 /**
  * Regroupe les informations du "morceau" d'une fonction affine par morceaux.
@@ -30,7 +31,7 @@ struct PiecewiseLinearFunction {
      * @param x l'abscisse dont on veut connaître l'intervalle.
      * @return l'indice du morceau dans lequel x se trouve.
      */
-    size_t findPiece(double x) const;
+    uint64_t findPiece(double x) const;
 
     /**
      * Simplifie l'ecriture de l'application de la fonction affine par morceau sur une valeur donnee.

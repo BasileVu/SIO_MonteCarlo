@@ -5,13 +5,13 @@
 ImportanceSampling::ImportanceSampling(const std::function<double(double)>& g, const std::vector<double>& xs, const std::vector<double>& ys)
         : MonteCarloMethod(g), generator(xs, ys) {}
 
-MonteCarloMethod::Sampling ImportanceSampling::sampleWithSize(size_t N) {
+MonteCarloMethod::Sampling ImportanceSampling::sampleWithSize(uint64_t N) {
     init();
     sample(N);
     return {mean, stdDev, ConfidenceInterval(mean, halfWidth), N, (double)(clock() - start) / CLOCKS_PER_SEC};
 }
 
-MonteCarloMethod::Sampling ImportanceSampling::sampleWithMaxWidth(double maxWidth, size_t step) {
+MonteCarloMethod::Sampling ImportanceSampling::sampleWithMaxWidth(double maxWidth, uint64_t step) {
     init();
 
     // genere des valeurs tant que la largeur de l'intervalle de confiance est plus grande que "maxWidth"
@@ -22,7 +22,7 @@ MonteCarloMethod::Sampling ImportanceSampling::sampleWithMaxWidth(double maxWidt
     return {mean, stdDev, ConfidenceInterval(mean, halfWidth), numGen, (double)(clock() - start) / CLOCKS_PER_SEC};
 }
 
-MonteCarloMethod::Sampling ImportanceSampling::sampleWithMinTime(double maxTime, size_t step) {
+MonteCarloMethod::Sampling ImportanceSampling::sampleWithMinTime(double maxTime, uint64_t step) {
     init();
 
     double curTime = 0;
@@ -41,10 +41,10 @@ void ImportanceSampling::setSeed(const std::seed_seq &seed) {
     generator.setSeed(seed);
 }
 
-void ImportanceSampling::sample(size_t step) {
+void ImportanceSampling::sample(uint64_t step) {
     const PiecewiseLinearFunction& f = generator.getPWLFunc();
 
-    for (size_t i = 0; i < step; ++i) {
+    for (uint64_t i = 0; i < step; ++i) {
         double X = generator.generate();
         double Y = g(X) / f(X);
 

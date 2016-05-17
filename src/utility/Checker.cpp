@@ -1,4 +1,4 @@
-#include <cstddef>
+#include <cstdint>
 
 #include "Checker.h"
 
@@ -15,7 +15,7 @@ bool Checker::check(const std::vector<double>& xs, const std::vector<double>& ys
 bool Checker::checkXs(const std::vector<double>& v) {
 
     // verification que les abscisses sont strictement croissantes
-    for (size_t i = 1; i < v.size(); ++i) {
+    for (uint64_t i = 1; i < v.size(); ++i) {
         if (v[i] <= v[i-1]) {
             return false;
         }
@@ -28,7 +28,7 @@ bool Checker::checkYs(const std::vector<double>& v) {
     bool yNotZero = false;
 
     // verification que les ordonnees ne sont pas negatives et qu'au moins une ordonnee est plus grande que 0
-    for (size_t i = 0; i < v.size(); ++i) {
+    for (uint64_t i = 0; i < v.size(); ++i) {
         if (v[i] < 0) {
             return false;
         }

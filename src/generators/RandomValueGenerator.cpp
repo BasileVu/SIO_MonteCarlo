@@ -14,7 +14,7 @@ RandomValueGenerator::RandomValueGenerator(const std::vector<double>& xs, const 
     // creation des pk
     std::vector<double> pks;
     pks.reserve(xs.size()-1);
-    for (size_t i = 0; i < xs.size()-1; ++i) {
+    for (uint64_t i = 0; i < xs.size()-1; ++i) {
         pks.push_back(func.pieces[i].A_k/func.A);
     }
 
@@ -22,7 +22,7 @@ RandomValueGenerator::RandomValueGenerator(const std::vector<double>& xs, const 
     F_parts.resize(xs.size());
     F_parts[0] = 0; // F_0 : premiere partie de la fonction de repartition -> 0 avant xs[0]
 
-    for (size_t i = 1; i < F_parts.size(); ++i) {
+    for (uint64_t i = 1; i < F_parts.size(); ++i) {
         F_parts[i] = F_parts[i-1] + pks[i-1];
     }
 }
@@ -31,8 +31,8 @@ void RandomValueGenerator::setSeed(std::seed_seq seed) {
     generator.seed(seed);
 }
 
-size_t RandomValueGenerator::generateK() {
-    size_t j = 1;
+uint64_t RandomValueGenerator::generateK() {
+    uint64_t j = 1;
     double U = distribution(generator);
 
     // on cherche l'indice de l'intervalle dans laquelle on est tombe
@@ -64,7 +64,7 @@ InverseFunctions::InverseFunctions(const std::vector<double>& xs, const std::vec
 double HitOrMiss::generate() {
 
     double X, Y; // coordonnees du point (X,Y) qui sera genere
-    size_t sliceIndex;  // indice de la "tranche" dans laquelle X se trouvera
+    uint64_t sliceIndex;  // indice de la "tranche" dans laquelle X se trouvera
 
     do {
         // generation du point (X,Y)
@@ -82,7 +82,7 @@ double Geometric::generate() {
 
     // On commence par selectionner une intervalle en fonction des p_k des "tranches" de la fonction.
     // K represente l'indice de l'intervalle selectionne.
-    size_t K = generateK();
+    uint64_t K = generateK();
 
 
     // Ensuite, on genere une realisation d'une variable de densite f_K en acceptant a tous les coups X.
@@ -110,7 +110,7 @@ double InverseFunctions::generate() {
 
     // On commence par selectionner une intervalle en fonction des p_k des "tranches" de la fonction.
     // K represente l'indice de l'intervalle selectionne.
-    size_t K = generateK();
+    uint64_t K = generateK();
 
     // Ensuite, on applique la methode des fonctions inverses.
 

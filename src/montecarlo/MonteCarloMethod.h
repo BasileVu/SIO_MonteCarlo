@@ -4,6 +4,7 @@
 #include <random>
 #include <functional>
 #include <ctime>
+#include <cstdint>
 
 #include "../utility/Stats.h"
 
@@ -24,7 +25,7 @@ protected:
 
     double sum;         // la somme des valeurs
     double sumSquares;  // la somme des carres des valeurs
-    size_t numGen;      // la taille de l'echantillon (nombre de valeurs generees)
+    uint64_t numGen;      // la taille de l'echantillon (nombre de valeurs generees)
 
     clock_t start;      // utile pour la mesure du temps requis pour generer un echantillon
 
@@ -36,7 +37,7 @@ public:
         double areaEstimator;                   // aire estimee
         double stdDevEstimator;                 // estimateur de l'ecart-type de l'aire estimee
         ConfidenceInterval confidenceInterval;  // intervalle de confiance a 95%
-        size_t N;                               // taille de l'echantillon
+        uint64_t N;                               // taille de l'echantillon
         double elapsedTime;                     // temps pour creer la totalite de l'echantillon
     };
 
@@ -57,7 +58,7 @@ public:
      *
      * @pram N la taille totale de l'echantillon.
      */
-    virtual Sampling sampleWithSize(size_t N) = 0;
+    virtual Sampling sampleWithSize(uint64_t N) = 0;
 
     /**
      * Genere autant de valeurs que necessaire afin d'obtenir une intervalle de confiance a 95% pour l'aire estimee
@@ -66,7 +67,7 @@ public:
      * @param maxWidth La taille maximale que doit avoir l'IC.
      * @param step Le nombre de generations qui seront effectuees avant de reverifier la taille de l'IC.
      */
-    virtual Sampling sampleWithMaxWidth(double maxWidth, size_t step) = 0;
+    virtual Sampling sampleWithMaxWidth(double maxWidth, uint64_t step) = 0;
 
     /**
      * Genere une intervalle de confiance a 95% pour l'aire estimee aussi precise que possible en generant des valeurs
@@ -75,7 +76,7 @@ public:
      * @param minTime Le temps minimum qui doit etre utilise pour affiner la precision de l'IC.
      * @pram step Le nombre de generations qui seront effectuees avant de reverifier le temps d'execution total.
      */
-    virtual Sampling sampleWithMinTime(double minTime, size_t step) = 0;
+    virtual Sampling sampleWithMinTime(double minTime, uint64_t step) = 0;
 
 protected:
     /**

@@ -10,7 +10,7 @@ std::string ConfidenceInterval::toString() const {
     return ss.str();
 }
 
-ConfidenceInterval::ConfidenceInterval(double center, double halfWidth, size_t precision) {
+ConfidenceInterval::ConfidenceInterval(double center, double halfWidth, uint64_t precision) {
     lower = center - halfWidth;
     upper = center + halfWidth;
     width = halfWidth * 2;
@@ -62,7 +62,7 @@ ConfidenceInterval Stats::confidenceInterval(const std::vector<double>& values, 
     return ConfidenceInterval (m, haldWidth);
 };
 
-Points Stats::createPoints(size_t numPoints, const std::function<double(double)>& func, double a, double b) {
+Points Stats::createPoints(uint64_t numPoints, const std::function<double(double)>& func, double a, double b) {
 
     if (numPoints < 2) {
         throw std::invalid_argument("Le nombre de points doit etre au moins egal a 2.");
@@ -77,7 +77,7 @@ Points Stats::createPoints(size_t numPoints, const std::function<double(double)>
 
     double pieceWidth = (b - a) / (numPoints - 1);
 
-    for (size_t i = 0; i < numPoints; ++i) {
+    for (uint64_t i = 0; i < numPoints; ++i) {
         double x = a + pieceWidth * i;
         xs.push_back(x);
         ys.push_back(func(x));

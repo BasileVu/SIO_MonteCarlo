@@ -51,7 +51,7 @@ protected:
      *
      * @return l'indice de la tranche.
      */
-    size_t generateK();
+    uint64_t generateK();
 };
 
 

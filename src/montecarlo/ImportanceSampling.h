@@ -18,15 +18,15 @@ public:
     /**
      * @see MontecarloMethod::sampleWithSize.
      */
-    Sampling sampleWithSize(size_t N);
+    Sampling sampleWithSize(uint64_t N);
     /**
      * @see MontecarloMethod::sampleWithMaxWidth.
      */
-    Sampling sampleWithMaxWidth(double maxWidth, size_t step);
+    Sampling sampleWithMaxWidth(double maxWidth, uint64_t step);
     /**
      * @see MontecarloMethod::sampleWithMinTime.
      */
-    Sampling sampleWithMinTime(double maxTime, size_t step);
+    Sampling sampleWithMinTime(double maxTime, uint64_t step);
 
     /**
      * @see MonteCarloMethod::setSeed.
@@ -40,7 +40,7 @@ private:
      *
      * @param step Le nombre de generation qui seront effectuees.
      */
-    void sample(size_t step);
+    void sample(uint64_t step);
 };
 
 #endif // IMPORTANCE_SAMPLING_H

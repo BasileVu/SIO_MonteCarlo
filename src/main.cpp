@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <list>
 #include <fstream>
+#include <cstdint>
 
 #include "montecarlo/UniformSampling.h"
 #include "montecarlo/ImportanceSampling.h"
@@ -23,6 +24,9 @@ const string MIN_TIME = "Temps min [s]";
 const string HEADER = "N generations | Aire estimee |      IC a 95%      | RC(N) * ET | largeur IC | Temps [s]";
 
 
+/**
+ * Exporte l'echantillon en CSV.
+ */
 void exportSampling(ofstream& ofs, const MonteCarloMethod::Sampling& s) {
     ofs << s.N << CSV_SEPARATOR;
     ofs << fixed;
@@ -36,6 +40,9 @@ void exportSampling(ofstream& ofs, const MonteCarloMethod::Sampling& s) {
     ofs << endl;
 }
 
+/**
+ * Affiche l'echantilon.
+ */
 void printSampling(const MonteCarloMethod::Sampling& s) {
     cout << setw(13) << s.N << " | ";
     cout << fixed;
@@ -48,6 +55,9 @@ void printSampling(const MonteCarloMethod::Sampling& s) {
     cout << endl;
 }
 
+/**
+ * Affiche l'echantillon et l'exporte en CSV si l'option est activee.
+ */
 void printExportSampling(const MonteCarloMethod::Sampling& s) {
     printSampling(s);
 
@@ -58,6 +68,9 @@ void printExportSampling(const MonteCarloMethod::Sampling& s) {
     }
 }
 
+/**
+ * Affiche l'echantillon et l'exporte en CSV si l'option est activee.
+ */
 void printExportSampling(double constraint, const MonteCarloMethod::Sampling& s) {
     cout << setw(14) << constraint << " | ";
     printSampling(s);
@@ -70,6 +83,11 @@ void printExportSampling(double constraint, const MonteCarloMethod::Sampling& s)
     }
 }
 
+/**
+ * Lance les tests de validite d'implementation: genere des echantillons d'une taille specifiee.
+ *
+ * Les resultats sont affiches et egalement exportes en CSV si l'option est activee.
+ */
 void runImplementationTest(MonteCarloMethod& m) {
     cout << HEADER << endl;
     if (EXPORT_CSV) {
@@ -78,13 +96,20 @@ void runImplementationTest(MonteCarloMethod& m) {
         ofs.close();
     }
 
-    for (size_t i = 100000; i <= 10000000; i *= 10) {
+    for (uint64_t i = 100000; i <= 10000000; i *= 10) {
         printExportSampling(m.sampleWithSize(i));
     }
     cout << endl;
 }
 
-void runTests(MonteCarloMethod& m, const list<double>& maxWidths, const list<double>& minTimes, size_t step) {
+/**
+ * Lance les tests:
+ * - pour chaque largeur max d'IC, genere des valeurs jusqu'a que la largeur de l'IC soit satisfaisante.
+ * - pour chaque temps min, genere des valeurs jusqu'a que le temps min soit atteint.
+ *
+ * Les resultats sont affiches et egalement exportes en CSV si l'option est activee.
+ */
+void runTests(MonteCarloMethod& m, const list<double>& maxWidths, const list<double>& minTimes, uint64_t step) {
 
     cout << MAX_WIDTH << " | " << HEADER << endl;
     if (EXPORT_CSV) {
@@ -123,7 +148,7 @@ int main () {
     Points points = Stats::createPoints(15, g, a, b);
 
     // nombre d'etapes a faire dans le cas de generations avec une largeur d'IC ou un temps limite
-    size_t step = 100000;
+    uint64_t step = 100000;
 
     // graine utilisee pour les generateurs
     seed_seq seed = {24, 512, 42};
@@ -137,9 +162,9 @@ int main () {
         maxWidths.push_back(i);
     }
 
-    // creation des temps min
+    // creation des temps minimaux
     list<double> minTimes;
-    for (double i = 1; i < 30; ++i) {
+    for (double i = 1; i <= 1024; i *= 2) {
         minTimes.push_back(i);
     }
 
@@ -162,7 +187,7 @@ int main () {
         is.setSeed(seed);
         cv.setSeed(seed);
 
-        const size_t M = 10000;
+        const uint64_t M = 10000;
         cv.setSamplingSize(M);
 
         cout << "-- Echantillonage uniforme --" << endl;
@@ -204,7 +229,7 @@ int main () {
         ControlVariable cv(g, a, b, points.xs, points.ys);
         cv.setSeed(seed);
 
-        size_t M = 10000;
+        uint64_t M = 10000;
         cv.setSamplingSize(M);
 
         cout << "-- Echantillonage uniforme avec variable de controle --" << endl;

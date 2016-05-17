@@ -6,6 +6,7 @@
 #include <cmath>
 #include <algorithm>
 #include <iostream>
+#include <cstdint>
 #include "PiecewiseLinearFunction.h"
 
 /**
@@ -16,9 +17,9 @@ struct ConfidenceInterval {
     double lower; // borne inferieure
     double upper; // borne superieure
     double width; // difference entre les deux bornes
-    size_t displayPrecision; // precision pour l'affichage
+    uint64_t displayPrecision; // precision pour l'affichage
 
-    ConfidenceInterval(double center, double halfWidth, size_t precision = 3);
+    ConfidenceInterval(double center, double halfWidth, uint64_t precision = 3);
 
     /**
      * Cree la representation sous forme de chaine de caracteres de l'intervalle de confiance.
@@ -101,7 +102,7 @@ public:
      * @param b La borne superieure de l'intervalle sur lequel on va subdiviser 'func'.
      * @return Les points, un ensemble contenant une liste des abscisses et une des ordonnees.
      */
-    static Points createPoints(size_t numPoints, const std::function<double(double)>& func, double a, double b);
+    static Points createPoints(uint64_t numPoints, const std::function<double(double)>& func, double a, double b);
 };
 
 #endif // STATS_H

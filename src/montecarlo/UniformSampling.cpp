@@ -13,14 +13,14 @@ UniformSampling::UniformSampling(const MonteCarloMethod::Func& g, double a, doub
     }
 }
 
-MonteCarloMethod::Sampling UniformSampling::sampleWithSize(size_t N) {
+MonteCarloMethod::Sampling UniformSampling::sampleWithSize(uint64_t N) {
     init();
 
     sample(N);
     return createSampling((double)(clock() - start) / CLOCKS_PER_SEC);
 }
 
-MonteCarloMethod::Sampling UniformSampling::sampleWithMaxWidth(double maxWidth, size_t step) {
+MonteCarloMethod::Sampling UniformSampling::sampleWithMaxWidth(double maxWidth, uint64_t step) {
     init();
 
     do {
@@ -30,7 +30,7 @@ MonteCarloMethod::Sampling UniformSampling::sampleWithMaxWidth(double maxWidth, 
     return createSampling((double)(clock() - start) / CLOCKS_PER_SEC);
 }
 
-MonteCarloMethod::Sampling UniformSampling::sampleWithMinTime(double maxTime, size_t step) {
+MonteCarloMethod::Sampling UniformSampling::sampleWithMinTime(double maxTime, uint64_t step) {
     init();
     double curTime = 0;
 
@@ -48,8 +48,8 @@ void UniformSampling::setSeed(const std::seed_seq &seed) {
     mtGenerator.seed(copy);
 }
 
-void UniformSampling::sample(size_t step) {
-    for (size_t i = 0; i < step; ++i) {
+void UniformSampling::sample(uint64_t step) {
+    for (uint64_t i = 0; i < step; ++i) {
         double X = uniformDistr(mtGenerator) * (b - a) + a; // X ~ U(a,b)
         double Y = g(X);
 
