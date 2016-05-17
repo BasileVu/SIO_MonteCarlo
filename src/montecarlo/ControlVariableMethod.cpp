@@ -16,10 +16,14 @@ ControlVariable::ControlVariable(const Func& g, double a, double b,
     mu = h.A / (b-a);
 }
 
-MonteCarloMethod::Sampling ControlVariable::sampleWithSize(size_t M, size_t N) {
+void ControlVariable::setSamplingSize(size_t M) {
+    this->M = M;
+}
+
+MonteCarloMethod::Sampling ControlVariable::sampleWithSize(size_t N) {
 
     // phase 1 : calcul de la constante 'c'
-    computeConstant(M);
+    computeConstant();
 
     size_t step = N - M;
     numGen = M;
@@ -29,10 +33,10 @@ MonteCarloMethod::Sampling ControlVariable::sampleWithSize(size_t M, size_t N) {
     return createSampling((double)(clock() - start) / CLOCKS_PER_SEC);
 }
 
-MonteCarloMethod::Sampling ControlVariable::sampleWithMaxWidth(size_t M, double maxWidth, size_t step) {
+MonteCarloMethod::Sampling ControlVariable::sampleWithMaxWidth(double maxWidth, size_t step) {
 
     // phase 1 : calcul de la constante 'c'
-    computeConstant(M);
+    computeConstant();
 
     numGen = M;
 
@@ -44,10 +48,10 @@ MonteCarloMethod::Sampling ControlVariable::sampleWithMaxWidth(size_t M, double 
     return createSampling((double)(clock() - start) / CLOCKS_PER_SEC);
 }
 
-MonteCarloMethod::Sampling ControlVariable::sampleWithMinTime(size_t M, double minTime, size_t step) {
+MonteCarloMethod::Sampling ControlVariable::sampleWithMinTime(double minTime, size_t step) {
 
     // phase 1 : calcul de la constante 'c'
-    computeConstant(M);
+    computeConstant();
 
     numGen = M;
     double curTime = 0;
@@ -67,7 +71,7 @@ void ControlVariable::setSeed(const std::seed_seq &seed) {
     mtGenerator.seed(copy);
 }
 
-void ControlVariable::computeConstant(size_t M) {
+void ControlVariable::computeConstant() {
 
     init();
 
@@ -128,6 +132,7 @@ MonteCarloMethod::Sampling ControlVariable::createSampling(double timeElapsed) c
     double areaEstimator = (b-a) * mean;
     return {areaEstimator, stdDev, ConfidenceInterval(areaEstimator, halfWidth), numGen, timeElapsed};
 }
+
 
 
 

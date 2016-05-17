@@ -16,7 +16,7 @@ public:
     typedef std::function<double(double)> Func;
 
 protected:
-    const Func& g;      // la fonciton dont on veut evaluer l'aire
+    const Func& g;      // la fonciton dont on veut estimer l'aire
 
     double mean;        // la moyenne des valeurs generees
     double stdDev;      // l'estimateur de l'ecart-type de l'estimateur de l'aire
@@ -51,6 +51,31 @@ public:
      * Initialise la graine du generateur utilise pour la methode.
      */
     virtual void setSeed(const std::seed_seq& seed) = 0;
+
+    /**
+     * Genere un echantillon d'une taille donnee.
+     *
+     * @pram N la taille totale de l'echantillon.
+     */
+    virtual Sampling sampleWithSize(size_t N) = 0;
+
+    /**
+     * Genere autant de valeurs que necessaire afin d'obtenir une intervalle de confiance a 95% pour l'aire estimee
+     * dont la largeur ne depasse pas une certaine valeur donnee.
+     *
+     * @param maxWidth La taille maximale que doit avoir l'IC.
+     * @param step Le nombre de generations qui seront effectuees avant de reverifier la taille de l'IC.
+     */
+    virtual Sampling sampleWithMaxWidth(double maxWidth, size_t step) = 0;
+
+    /**
+     * Genere une intervalle de confiance a 95% pour l'aire estimee aussi precise que possible en generant des valeurs
+     * durant un laps de temps d'une duree minimum donnee.
+     *
+     * @param minTime Le temps minimum qui doit etre utilise pour affiner la precision de l'IC.
+     * @pram step Le nombre de generations qui seront effectuees avant de reverifier le temps d'execution total.
+     */
+    virtual Sampling sampleWithMinTime(double minTime, size_t step) = 0;
 
 protected:
     /**

@@ -4,7 +4,7 @@
 #include "MonteCarloMethod.h"
 
 /**
- * Represente la methode d'integration par echantillonage uniforme avec variable de controle.
+ * Represente la methode d'integration par echantillonnage uniforme avec variable de controle.
  */
 class ControlVariable : public MonteCarloMethod {
 private:
@@ -14,16 +14,17 @@ private:
 
     PiecewiseLinearFunction h; // variable de controle (fonction affine par morceaux)
 
-    double a, b; // bornes inferieure et superieure
+    double a, b; // bornes inferieure et superieure de l'intervalle sur laquelle on veut evaluer la fonction
     double mu;   // esperance de la fonction par morceaux
 
-    double c; // coefficient c tq V = Y + c(Z - mu), avec Y = g(X) et Z(X) la variable de controle
+    double c;     // coefficient c tq V = Y + c(Z - mu), avec Y = g(X) et Z(X) la variable de controle
+    size_t M = 0; // taille de l'echantillon pour determiner 'c'
 
 public:
     /**
      * Prepare la methode.
      *
-     * @param g La fonction dont on veut connaitre l'aire.
+     * @param g La fonction dont on veut estimer l'aire.
      * @param a la borne inferieure de l'intervalle sur laquelle on veut evaluer g.
      * @param b la borne superieure de l'intervalle sur laquelle on veut evaluer g.
      * @param xs Les abscisses des points de la variable de controle (sous forme de fonciton par morceaux).
@@ -32,58 +33,53 @@ public:
     ControlVariable(const Func& g, double a, double b, const std::vector<double>& xs, const std::vector<double>& ys);
 
     /**
-     * Genere un echantillon d'une taille donnee.
-     *
-     * @param M La taille de l'echantillon "de base" (pour trouver le 'c').
-     * @pram N la taille totale de l'echantillon.
+     * Fixe la valeur de
      */
-    Sampling sampleWithSize(size_t M, size_t N);
+    void setSamplingSize(size_t M);
+
 
     /**
-     * Genere autant de valeurs que necessaire afin d'obtenir une intervalle de confiance a 95% pour l'aire estimee
-     * dont la largeur ne depasse pas une certaine valeur donnee.
+     * @see MontecarloMethod::sampleWithSize.
      *
-     * @param M La taille de l'echantillon "de base" (pour trouver le 'c').
-     * @param maxWidth La taille maximale que doit avoir l'IC.
-     * @pram step Le nombre de generations qui seront effectuees avant de reverifier la taille de l'IC.
+     * Utilisable uniquement apres que 'setSamplingSize' ait ete appelee au moins une fois apres la creation de l'objet.
      */
-    Sampling sampleWithMaxWidth(size_t M, double maxWidth, size_t step);
+    Sampling sampleWithSize(size_t N);
+    /**
+     * @see MontecarloMethod::sampleWithMaxWidth.
+     *
+     * Utilisable uniquement apres que 'setSamplingSize' ait ete appelee au moins une fois apres la creation de l'objet.
+     */
+    Sampling sampleWithMaxWidth(double maxWidth, size_t step);
+    /**
+     * @see MontecarloMethod::sampleWithMinTime.
+     *
+     * Utilisable uniquement apres que 'setSamplingSize' ait ete appelee au moins une fois apres la creation de l'objet.
+     */
+    Sampling sampleWithMinTime(double maxTime, size_t step);
 
     /**
-     * Genere une intervalle de confiance a 95% pour l'aire estimee aussi precise que possible en generant des valeurs
-     * durant un laps de temps d'une duree minimum donnee.
-     *
-     * @param M La taille de l'echantillon "de base" (pour trouver le 'c').
-     * @param minTime Le temps minimum qui doit etre utilise pour affiner la precision de l'IC.
-     * @pram step Le nombre de generations qui seront effectuees avant de reverifier le temps d'execution total.
-     */
-    Sampling sampleWithMinTime(size_t M, double minTime, size_t step);
-
-    /**
-     * Initialise la graine du generateur.
-     *
-     * @param seed La graine a utiliser.
+     * @see MonteCarloMethod::setSeed.
      */
     void setSeed(const std::seed_seq& seed);
 
 private:
     /**
      * Calcule la constante 'c'.
-     *
-     * @param M La taille de l'echantillon a generer afin de toruver la constante.
      */
-    void computeConstant(size_t M);
+    void computeConstant();
 
-    /**
-     * Utilise la constante generee afin de generer l'IC. Effectue un certain nombre donne de generations afin de mettre
-     * a jour les statistiques (somme et somme des carres) et de creer un IC.
+    /*
+     * Effectue un certain nombre donne de generations afin de mettre a jour les statistiques (somme, somme des
+     * carres, moyenne, etc) afin de creer un IC pour l'aire estimee.
      *
-     * @param step Le nomre de generation qui seront effectuees.
+     * Utilisable uniquement apres un appel a 'computeConstant'.
+     *
+     * @param step Le nombre de generation qui seront effectuees.
      */
     void sample(size_t step);
 
     /**
-     * Cree l'echantillon.
+     * Empaquete toutes les valeurs associees a l'echantillon (aire estimee, IC, etc: voir MonteCarloMethod::Sampling).
      *
      * @return L'echantillon cree.
      */
