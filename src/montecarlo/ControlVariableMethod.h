@@ -14,7 +14,7 @@ private:
 
     PiecewiseLinearFunction h; // variable de controle (fonction affine par morceaux)
 
-    double a, b; // bornes inferieure et superieure de l'intervalle sur laquelle on veut evaluer la fonction
+    double a, b; // bornes inferieure et superieure de l'intervalle sur lequel on veut evaluer la fonction
     double mu;   // esperance de la fonction par morceaux
 
     double c;     // coefficient c tq V = Y + c(Z - mu), avec Y = g(X) et Z(X) la variable de controle
@@ -25,8 +25,8 @@ public:
      * Prepare la methode.
      *
      * @param g La fonction dont on veut estimer l'aire.
-     * @param a la borne inferieure de l'intervalle sur laquelle on veut evaluer g.
-     * @param b la borne superieure de l'intervalle sur laquelle on veut evaluer g.
+     * @param a la borne inferieure de l'intervalle sur lequel on veut evaluer g.
+     * @param b la borne superieure de l'intervalle sur lequel on veut evaluer g.
      * @param xs Les abscisses des points de la variable de controle (sous forme de fonciton par morceaux).
      * @param ys Les ordonnees des points de la variable de controle (sous forme de fonciton par morceaux).
      */

@@ -10,7 +10,7 @@
 #include "PiecewiseLinearFunction.h"
 
 /**
- * Represente une intervalle de confiance.
+ * Represente un intervalle de confiance.
  */
 struct ConfidenceInterval {
 
@@ -30,7 +30,7 @@ struct ConfidenceInterval {
 };
 
 /**
- * Permet d'fficher l'intervalle de confiance sur un flux.
+ * Permet d'afficher l'intervalle de confiance sur un flux.
  *
  * @param os Le flux de sortie sur lequel ecrire.
  * @pram ci L'intervalle de confiance a utiliser.
@@ -102,7 +102,7 @@ public:
      * @param b La borne superieure de l'intervalle sur lequel on va subdiviser 'func'.
      * @return Les points, un ensemble contenant une liste des abscisses et une des ordonnees.
      */
-    static Points createPoints(uint64_t numPoints, const std::function<double(double)>& func, double a, double b);
+    static Points createPoints(size_t numPoints, const std::function<double(double)>& func, double a, double b);
 };
 
 #endif // STATS_H

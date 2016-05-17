@@ -46,8 +46,8 @@ public:
 
 protected:
     /**
-     * Permet de trouver dans quelle intervalle k on tombe en fonction de la probablilité p_k de la tranche liee a
-     * cette intervalle.
+     * Permet de trouver dans quel intervalle k on tombe en fonction de la probablilité p_k de la tranche liee a
+     * cet intervalle.
      *
      * @return l'indice de la tranche.
      */

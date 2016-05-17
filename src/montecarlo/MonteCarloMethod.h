@@ -61,7 +61,7 @@ public:
     virtual Sampling sampleWithSize(uint64_t N) = 0;
 
     /**
-     * Genere autant de valeurs que necessaire afin d'obtenir une intervalle de confiance a 95% pour l'aire estimee
+     * Genere autant de valeurs que necessaire afin d'obtenir un intervalle de confiance a 95% pour l'aire estimee
      * dont la largeur ne depasse pas une certaine valeur donnee.
      *
      * @param maxWidth La taille maximale que doit avoir l'IC.
@@ -70,7 +70,7 @@ public:
     virtual Sampling sampleWithMaxWidth(double maxWidth, uint64_t step) = 0;
 
     /**
-     * Genere une intervalle de confiance a 95% pour l'aire estimee aussi precise que possible en generant des valeurs
+     * Genere un intervalle de confiance a 95% pour l'aire estimee aussi precise que possible en generant des valeurs
      * durant un laps de temps d'une duree minimum donnee.
      *
      * @param minTime Le temps minimum qui doit etre utilise pour affiner la precision de l'IC.

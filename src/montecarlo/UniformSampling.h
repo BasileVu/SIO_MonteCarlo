@@ -12,15 +12,15 @@ private:
     std::mt19937_64 mtGenerator;
     std::uniform_real_distribution<double> uniformDistr;
 
-    double a, b; // bornes inferieure et superieure de l'intervalle sur laquelle on veut evaluer la fonction
+    double a, b; // bornes inferieure et superieure de l'intervalle sur lequel on veut evaluer la fonction
 
 public:
     /*
      * Prepare la methode.
      *
      * @param g La fonction dont on veut estimer l'aire.
-     * @param a la borne inferieure de l'intervalle sur laquelle on veut evaluer g.
-     * @param b la borne superieure de l'intervalle sur laquelle on veut evaluer g.
+     * @param a la borne inferieure de l'intervalle sur lequel on veut evaluer g.
+     * @param b la borne superieure de l'intervalle sur lequel on veut evaluer g.
      */
     UniformSampling(const Func& g, double a, double b);
 

@@ -26,7 +26,7 @@ struct PiecewiseLinearFunction {
     PiecewiseLinearFunction(const std::vector<double>& xs, const std::vector<double>& ys);
 
     /**
-     * Recherche dichotomique afin de trouver dans quelle intervalle x se trouve.
+     * Recherche dichotomique afin de trouver dans quel intervalle x se trouve.
      *
      * @param x l'abscisse dont on veut connaître l'intervalle.
      * @return l'indice du morceau dans lequel x se trouve.

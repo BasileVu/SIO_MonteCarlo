@@ -62,7 +62,7 @@ ConfidenceInterval Stats::confidenceInterval(const std::vector<double>& values, 
     return ConfidenceInterval (m, haldWidth);
 };
 
-Points Stats::createPoints(uint64_t numPoints, const std::function<double(double)>& func, double a, double b) {
+Points Stats::createPoints(size_t numPoints, const std::function<double(double)>& func, double a, double b) {
 
     if (numPoints < 2) {
         throw std::invalid_argument("Le nombre de points doit etre au moins egal a 2.");

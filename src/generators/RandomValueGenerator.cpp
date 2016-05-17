@@ -35,7 +35,7 @@ uint64_t RandomValueGenerator::generateK() {
     uint64_t j = 1;
     double U = distribution(generator);
 
-    // on cherche l'indice de l'intervalle dans laquelle on est tombe
+    // on cherche l'indice de l'intervalle dans lequel on est tombe
     while (true) {
         if (U <= F_parts[j]) {
             return j-1;
@@ -80,7 +80,7 @@ double HitOrMiss::generate() {
 
 double Geometric::generate() {
 
-    // On commence par selectionner une intervalle en fonction des p_k des "tranches" de la fonction.
+    // On commence par selectionner un intervalle en fonction des p_k des "tranches" de la fonction.
     // K represente l'indice de l'intervalle selectionne.
     uint64_t K = generateK();
 
@@ -108,7 +108,7 @@ double Geometric::generate() {
 
 double InverseFunctions::generate() {
 
-    // On commence par selectionner une intervalle en fonction des p_k des "tranches" de la fonction.
+    // On commence par selectionner un intervalle en fonction des p_k des "tranches" de la fonction.
     // K represente l'indice de l'intervalle selectionne.
     uint64_t K = generateK();
 
