@@ -13,7 +13,8 @@
 using namespace std;
 
 #define EXPORT_CSV true
-const string CSV_FILE = "result.csv";
+const string CSV_FILE = "results.csv";
+const string TESTS_CSV_FILE = "tests.csv";
 const char CSV_SEPARATOR = ';';
 const string CSV_HEADER = "N generations;Aire estimee;IC;RC(N) * ET;largeur IC;Temps [s];IC inf;IC sup";
 
@@ -51,7 +52,7 @@ void printExportSampling(const MonteCarloMethod::Sampling& s) {
     printSampling(s);
 
     if (EXPORT_CSV) {
-        ofstream ofs(CSV_FILE, ios_base::app);
+        ofstream ofs(TESTS_CSV_FILE, ios_base::app);
         exportSampling(ofs, s);
         ofs.close();
     }
@@ -72,7 +73,7 @@ void printExportSampling(double constraint, const MonteCarloMethod::Sampling& s)
 void runImplementationTest(MonteCarloMethod& m) {
     cout << HEADER << endl;
     if (EXPORT_CSV) {
-        ofstream ofs(CSV_FILE, ios_base::app);
+        ofstream ofs(TESTS_CSV_FILE, ios_base::app);
         ofs << CSV_HEADER << endl;
         ofs.close();
     }
@@ -142,12 +143,12 @@ int main () {
         minTimes.push_back(i);
     }
 
+
     if (EXPORT_CSV) {
         // cree un nouveau fichier / ecrase l'ancien s'il existe
-        ofstream ofs(CSV_FILE);
+        ofstream ofs(TESTS_CSV_FILE);
         ofs.close();
     }
-
 
     cout << "-----------------------------------------------------" << endl;
     cout << "| Test de l'implementation des differentes methodes |" << endl;
@@ -172,6 +173,12 @@ int main () {
 
         cout << "-- Echantillonage uniforme avec variable de controle --" << endl;
         runImplementationTest(cv);
+    }
+
+    if (EXPORT_CSV) {
+        // cree un nouveau fichier / ecrase l'ancien s'il existe
+        ofstream ofs(CSV_FILE);
+        ofs.close();
     }
 
     cout << "---------------------------------------------------------------------" << endl;
